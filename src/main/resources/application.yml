@@ -1,0 +1,76 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: iam-service
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tuanphonglqd@gmail.com
+    password: ${EMAIL_PASS}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET_KEY}
+      expiration-time: 86400000 # 24 hours
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: iam_service
+
+swagger:
+  host-url: http://localhost:${server.port}
+
+app:
+  otp:
+    expiration-minutes: 5
+    length: 6
+    cooldown-minutes: 1
+  default:
+    avatarUrl: https://toplist.vn/images/800px/cua-106572.jpg
+    orgAvatarUrl: https://th.bing.com/th/id/OIP.P1VHAo9uzl4vsNI3BWQZBAHaEK?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  show-actuator: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
