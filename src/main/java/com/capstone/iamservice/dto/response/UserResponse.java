@@ -17,7 +17,8 @@ public class UserResponse {
     private String email;
     private String firstName;
     private String lastName;
-    private Boolean enabled;
+    private String avatarUrl;
+    private String phoneNumber;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private Set<String> roles;

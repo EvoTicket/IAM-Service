@@ -13,15 +13,21 @@ import com.capstone.iamservice.repository.OrganizationProfileRepository;
 import com.capstone.iamservice.util.LocationUtil;
 import com.capstone.iamservice.util.OrganizationUtil;
 import com.capstone.iamservice.util.UserUtil;
+import com.cloudinary.Cloudinary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +35,7 @@ import java.time.ZoneOffset;
 public class OrganizationProfileService {
 
     private final OrganizationProfileRepository organizationRepository;
+    private final Cloudinary cloudinary;
     private final OrganizationUtil organizationUtil;
     private final LocationUtil locationUtil;
     private final UserUtil userUtil;
@@ -93,6 +100,34 @@ public class OrganizationProfileService {
                 .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Organization profile not found for this user"));
 
         return mapToResponse(organization);
+    }
+
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public OrganizationProfileResponse uploadLogoUrl(MultipartFile file, Long userId, Long organizationId) {
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("File phải là ảnh");
+        }
+
+        String folder = "logoUrl/" + userId + "/" + organizationId + "/";
+
+        String publicId = UUID.randomUUID().toString();
+
+        Map<String, Object> options = new HashMap<>();
+        options.put("resource_type", "image");
+        options.put("folder",  folder);
+        options.put("public_id", publicId);
+        options.put("overwrite", true);
+
+        try {
+            Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(), options);
+            OrganizationProfile organization = organizationUtil.getOrgProfileOrElseThrow(organizationId);
+            organization.setLogoUrl(uploadResult.get("url").toString());
+            return mapToResponse(organization);
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.IO_EXCEPTION, "Không thể tải ảnh lên Cloudinary: " + e.getMessage());
+        }
     }
 
     @Transactional
@@ -162,11 +197,6 @@ public class OrganizationProfileService {
         organization = organizationRepository.save(organization);
 
         return mapToResponse(organization);
-    }
-
-    public Page<OrganizationProfileResponse> getAllOrganizations(Pageable pageable) {
-        return organizationRepository.findAll(pageable)
-                .map(this::mapToResponse);
     }
 
 

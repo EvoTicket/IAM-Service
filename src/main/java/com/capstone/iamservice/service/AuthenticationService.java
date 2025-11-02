@@ -56,6 +56,7 @@ public class AuthenticationService {
                 .roles(Set.of(userRole))
                 .gender(request.getGender())
                 .status(UserStatus.ACTIVE)
+                .userAddress(request.getUserAddress())
                 .province(locationUtil.getProvinceByCode(request.getProvinceCode()))
                 .ward(locationUtil.getWardByCode(request.getWardCode()))
                 .avatarUrl(defaultAvatarUrl)

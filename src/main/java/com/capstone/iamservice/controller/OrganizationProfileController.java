@@ -6,10 +6,16 @@ import com.capstone.iamservice.dto.request.CreateOrganizationRequest;
 import com.capstone.iamservice.dto.response.OrganizationProfileResponse;
 import com.capstone.iamservice.dto.request.UpdateOrganizationRequest;
 import com.capstone.iamservice.dto.request.VerifyOrganizationRequest;
+import com.capstone.iamservice.dto.response.UserResponse;
 import com.capstone.iamservice.enums.OrganizationStatus;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
 import com.capstone.iamservice.service.OrganizationProfileService;
+import com.capstone.iamservice.util.TokenMetaData;
+import com.capstone.iamservice.util.UserUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +24,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/organizations")
@@ -29,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrganizationProfileController {
 
     private final OrganizationProfileService organizationService;
+    private final UserUtil userUtil;
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
@@ -36,7 +45,7 @@ public class OrganizationProfileController {
             @Valid @RequestBody CreateOrganizationRequest request,
             Authentication authentication) {
 
-        Long userId = getUserIdFromAuth(authentication);
+        Long userId = userUtil.getDataFromAuth(authentication).userId();
 
         OrganizationProfileResponse response = organizationService.createOrganization(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.created("tạo org profile thành công",response));
@@ -53,7 +62,7 @@ public class OrganizationProfileController {
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BaseResponse<OrganizationProfileResponse>> getMyOrganization(Authentication authentication) {
-        Long userId = getUserIdFromAuth(authentication);
+        Long userId = userUtil.getDataFromAuth(authentication).userId();
         OrganizationProfileResponse response = organizationService.getOrganizationByUserId(userId);
         return ResponseEntity.ok(BaseResponse.ok("Lấy profile thành công", response));
     }
@@ -71,10 +80,8 @@ public class OrganizationProfileController {
             @Valid @RequestBody UpdateOrganizationRequest request,
             Authentication authentication) {
 
-        com.capstone.iamservice.entity.User currentUser =
-                (com.capstone.iamservice.entity.User) authentication.getPrincipal();
-
-        if(!currentUser.isOrganization()){
+        TokenMetaData tokenMetaData = userUtil.getDataFromAuth(authentication);
+        if(!tokenMetaData.isOrganization()){
             throw new AppException(ErrorCode.FORBIDDEN, "Bạn chưa có hồ sơ doanh nghiệp");
         }
 
@@ -82,6 +89,27 @@ public class OrganizationProfileController {
         return ResponseEntity.ok(BaseResponse.ok("Update profile thành công", response));
     }
 
+    @PostMapping(value = "/logo-url", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Upload logoUrl")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<BaseResponse<OrganizationProfileResponse>> uploadUserAvatar(
+            Authentication authentication,
+            @Parameter(
+                    description = "File ảnh logo",
+                    content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
+            )
+            @RequestPart("file") MultipartFile file
+    ) {
+        TokenMetaData tokenMetaData = userUtil.getDataFromAuth(authentication);
+        if(!tokenMetaData.isOrganization()){
+            throw new AppException(ErrorCode.FORBIDDEN, "Bạn chưa có hồ sơ doanh nghiệp");
+        }
+
+        OrganizationProfileResponse org = organizationService.uploadLogoUrl(file, tokenMetaData.userId(), tokenMetaData.organizationId());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(BaseResponse.ok("Lấy thông tin người dùng thành công", org));
+    }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -118,11 +146,5 @@ public class OrganizationProfileController {
                 status, provinceCode, keyword, pageable
         );
         return ResponseEntity.ok(BasePageResponse.fromPage(response));
-    }
-
-    private Long getUserIdFromAuth(Authentication authentication) {
-        com.capstone.iamservice.entity.User user =
-                (com.capstone.iamservice.entity.User) authentication.getPrincipal();
-        return user.getId();
     }
 }

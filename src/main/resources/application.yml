@@ -7,7 +7,7 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: tuanphonglqd@gmail.com
+    username: evoticket.work@gmail.com
     password: ${EMAIL_PASS}
     properties:
       mail:
@@ -34,9 +34,18 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: iam_service
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
 
 swagger:
   host-url: http://localhost:${server.port}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_NAME}
+  api-key: ${CLOUDINARY_KEY}
+  api-secret: ${CLOUDINARY_SECRET}
 
 app:
   otp:

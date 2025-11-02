@@ -53,6 +53,9 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.6.0")
 
+	implementation 'com.cloudinary:cloudinary-core:1.38.0'
+	implementation 'com.cloudinary:cloudinary-http44:1.38.0'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

@@ -54,6 +54,7 @@ public class JwtService {
                 .toList();
         extraClaims.put("roles", roles);
         extraClaims.put("isOrganization", user.isOrganization());
+        extraClaims.put("organizationId", user.getOrganizationProfile() == null ? -1 : user.getOrganizationProfile().getId());
 
         return Jwts
                 .builder()
