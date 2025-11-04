@@ -1,4 +1,4 @@
-package com.capstone.iamservice.jwt;
+package com.capstone.iamservice.security;
 
 import com.capstone.iamservice.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,7 +9,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.OffsetDateTime;
 
 @Component
 @RequiredArgsConstructor

@@ -6,13 +6,12 @@ import com.capstone.iamservice.dto.request.CreateOrganizationRequest;
 import com.capstone.iamservice.dto.response.OrganizationProfileResponse;
 import com.capstone.iamservice.dto.request.UpdateOrganizationRequest;
 import com.capstone.iamservice.dto.request.VerifyOrganizationRequest;
-import com.capstone.iamservice.dto.response.UserResponse;
 import com.capstone.iamservice.enums.OrganizationStatus;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
+import com.capstone.iamservice.security.JwtUtil;
 import com.capstone.iamservice.service.OrganizationProfileService;
-import com.capstone.iamservice.util.TokenMetaData;
-import com.capstone.iamservice.util.UserUtil;
+import com.capstone.iamservice.security.TokenMetaData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,7 +26,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,15 +35,14 @@ import org.springframework.web.multipart.MultipartFile;
 public class OrganizationProfileController {
 
     private final OrganizationProfileService organizationService;
-    private final UserUtil userUtil;
+    private final JwtUtil jwtUtil;
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BaseResponse<OrganizationProfileResponse>> createOrganization(
-            @Valid @RequestBody CreateOrganizationRequest request,
-            Authentication authentication) {
+            @Valid @RequestBody CreateOrganizationRequest request) {
 
-        Long userId = userUtil.getDataFromAuth(authentication).userId();
+        Long userId = jwtUtil.getDataFromAuth().userId();
 
         OrganizationProfileResponse response = organizationService.createOrganization(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.created("tạo org profile thành công",response));
@@ -61,8 +58,8 @@ public class OrganizationProfileController {
 
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<BaseResponse<OrganizationProfileResponse>> getMyOrganization(Authentication authentication) {
-        Long userId = userUtil.getDataFromAuth(authentication).userId();
+    public ResponseEntity<BaseResponse<OrganizationProfileResponse>> getMyOrganization() {
+        Long userId = jwtUtil.getDataFromAuth().userId();
         OrganizationProfileResponse response = organizationService.getOrganizationByUserId(userId);
         return ResponseEntity.ok(BaseResponse.ok("Lấy profile thành công", response));
     }
@@ -77,10 +74,9 @@ public class OrganizationProfileController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BaseResponse<OrganizationProfileResponse>> updateOrganization(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateOrganizationRequest request,
-            Authentication authentication) {
+            @Valid @RequestBody UpdateOrganizationRequest request) {
 
-        TokenMetaData tokenMetaData = userUtil.getDataFromAuth(authentication);
+        TokenMetaData tokenMetaData = jwtUtil.getDataFromAuth();
         if(!tokenMetaData.isOrganization()){
             throw new AppException(ErrorCode.FORBIDDEN, "Bạn chưa có hồ sơ doanh nghiệp");
         }
@@ -93,14 +89,13 @@ public class OrganizationProfileController {
     @Operation(summary = "Upload logoUrl")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BaseResponse<OrganizationProfileResponse>> uploadUserAvatar(
-            Authentication authentication,
             @Parameter(
                     description = "File ảnh logo",
                     content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
             )
             @RequestPart("file") MultipartFile file
     ) {
-        TokenMetaData tokenMetaData = userUtil.getDataFromAuth(authentication);
+        TokenMetaData tokenMetaData = jwtUtil.getDataFromAuth();
         if(!tokenMetaData.isOrganization()){
             throw new AppException(ErrorCode.FORBIDDEN, "Bạn chưa có hồ sơ doanh nghiệp");
         }

@@ -8,7 +8,7 @@ import com.capstone.iamservice.entity.User;
 import com.capstone.iamservice.enums.UserStatus;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
-import com.capstone.iamservice.jwt.JwtService;
+import com.capstone.iamservice.security.JwtService;
 import com.capstone.iamservice.repository.RoleRepository;
 import com.capstone.iamservice.repository.UserRepository;
 import com.capstone.iamservice.util.LocationUtil;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

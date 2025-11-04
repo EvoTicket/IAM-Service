@@ -1,8 +1,5 @@
-package com.capstone.iamservice.config;
+package com.capstone.iamservice.security;
 
-import com.capstone.iamservice.jwt.JwtAccessDeniedHandler;
-import com.capstone.iamservice.jwt.JwtAuthenticationEntryPoint;
-import com.capstone.iamservice.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +23,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfiguration {
+public class SecurityConfig {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -48,25 +45,17 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authz -> authz
-                        // Public endpoints
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
-                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
 
-                        // Admin only endpoints
-                        .requestMatchers(HttpMethod.POST, "/api/roles/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/roles/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/roles/**").hasRole("ADMIN")
-                        .requestMatchers("/api/users/*/roles/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
 
-                        // Authenticated endpoints
                         .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.GET, "/api/roles/**").hasAnyRole("ADMIN", "USER")
 
                         .requestMatchers("/api/otp/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/locations/**").permitAll()

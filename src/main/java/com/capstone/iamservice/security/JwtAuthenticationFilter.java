@@ -1,4 +1,4 @@
-package com.capstone.iamservice.jwt;
+package com.capstone.iamservice.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

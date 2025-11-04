@@ -1,4 +1,4 @@
-package com.capstone.iamservice.jwt;
+package com.capstone.iamservice.security;
 
 import com.capstone.iamservice.exception.ErrorCode;
 import com.capstone.iamservice.exception.ErrorResponse;

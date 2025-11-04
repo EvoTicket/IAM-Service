@@ -1,4 +1,4 @@
-package com.capstone.iamservice.jwt;
+package com.capstone.iamservice.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -7,7 +7,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +51,7 @@ public class JwtService {
         List<String> roles = authorities.stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
+        extraClaims.put("userId", user.getId());
         extraClaims.put("roles", roles);
         extraClaims.put("isOrganization", user.isOrganization());
         extraClaims.put("organizationId", user.getOrganizationProfile() == null ? -1 : user.getOrganizationProfile().getId());
@@ -79,7 +79,7 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSignInKey())

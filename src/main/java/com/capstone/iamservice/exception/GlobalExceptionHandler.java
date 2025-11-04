@@ -121,7 +121,7 @@ public class GlobalExceptionHandler {
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(OffsetDateTime.now(ZoneOffset.ofHours(7)))
                 .status(errorCode.getStatus().value())
-                .error(errorCode.getStatus().getReasonPhrase())
+                .error(errorCode.getStatus().getReasonPhrase() + " " + ex.getMessage())
                 .code(errorCode.getCode())
                 .message(errorCode.getDefaultMessage())
                 .path(request.getRequestURI())
@@ -139,7 +139,7 @@ public class GlobalExceptionHandler {
                 .status(errorCode.getStatus().value())
                 .error(errorCode.getStatus().getReasonPhrase())
                 .code(errorCode.getCode())
-                .message("Phương thức HTTP không được hỗ trợ cho endpoint này.")
+                .message("Phương thức HTTP không được hỗ trợ cho endpoint này." + " " + ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
 
@@ -171,7 +171,7 @@ public class GlobalExceptionHandler {
                 .status(errorCode.getStatus().value())
                 .error(errorCode.getStatus().getReasonPhrase())
                 .code(errorCode.getCode())
-                .message("Dữ liệu không hợp lệ hoặc vi phạm ràng buộc trong cơ sở dữ liệu.")
+                .message("Dữ liệu không hợp lệ hoặc vi phạm ràng buộc trong cơ sở dữ liệu." + " " + ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
 
@@ -187,7 +187,7 @@ public class GlobalExceptionHandler {
                 .status(errorCode.getStatus().value())
                 .error(errorCode.getStatus().getReasonPhrase())
                 .code(errorCode.getCode())
-                .message("Dữ liệu đầu vào không hợp lệ hoặc không đọc được JSON.")
+                .message("Dữ liệu đầu vào không hợp lệ hoặc không đọc được JSON." + " " + ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
 
@@ -203,7 +203,7 @@ public class GlobalExceptionHandler {
                 .status(errorCode.getStatus().value())
                 .error(errorCode.getStatus().getReasonPhrase())
                 .code(errorCode.getCode())
-                .message("Lỗi khi upload file. Vui lòng kiểm tra định dạng hoặc dung lượng.")
+                .message("Lỗi khi upload file. Vui lòng kiểm tra định dạng hoặc dung lượng." + " " + ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
 

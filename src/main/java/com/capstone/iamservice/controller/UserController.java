@@ -3,8 +3,8 @@ package com.capstone.iamservice.controller;
 import com.capstone.iamservice.dto.BasePageResponse;
 import com.capstone.iamservice.dto.BaseResponse;
 import com.capstone.iamservice.dto.response.UserResponse;
+import com.capstone.iamservice.security.JwtUtil;
 import com.capstone.iamservice.service.UserService;
-import com.capstone.iamservice.util.UserUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
     private final UserService userService;
-    private final UserUtil userUtil;
+    private final JwtUtil jwtUtil;
 
     @GetMapping
     @Operation(summary = "Lấy danh sách người dùng")
@@ -49,54 +48,27 @@ public class UserController {
     @Operation(summary = "Lấy thông tin người dùng")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BaseResponse<UserResponse>> getUserByEmail(@AuthenticationPrincipal UserDetails userDetails) {
-        UserResponse user = userService.getUserByEmail(userDetails.getUsername());
+        UserResponse userResponse = userService.getUserByEmail(userDetails.getUsername());
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(BaseResponse.ok("Lấy thông tin người dùng thành công", user));
+                .body(BaseResponse.ok("Lấy thông tin người dùng thành công", userResponse));
     }
 
     @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Upload avatar")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BaseResponse<UserResponse>> uploadUserAvatar(
-            Authentication authentication,
             @Parameter(
                     description = "File ảnh đại diện",
                     content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
             )
             @RequestPart("file") MultipartFile file
     ) {
-        Long userId = userUtil.getDataFromAuth(authentication).userId();
+        Long userId = jwtUtil.getDataFromAuth().userId();
         UserResponse user = userService.uploadAvatar(file, userId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(BaseResponse.ok("Lấy thông tin người dùng thành công", user));
-    }
-
-    @PostMapping("/{userId}/roles/{roleId}")
-    @Operation(summary = "Thêm role cho người dùng")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseResponse<UserResponse>> addRoleToUser(
-            @PathVariable Long userId,
-            @PathVariable Long roleId) {
-
-        UserResponse user = userService.addRoleToUser(userId, roleId);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(BaseResponse.ok("Thêm role cho người dùng thành công", user));
-    }
-
-    @DeleteMapping("/{userId}/roles/{roleId}")
-    @Operation(summary = "Xóa role khỏi người dùng")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseResponse<UserResponse>> removeRoleFromUser(
-            @PathVariable Long userId,
-            @PathVariable Long roleId) {
-
-        UserResponse user = userService.removeRoleFromUser(userId, roleId);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(BaseResponse.ok("Xóa role cho người dùng thành công", user));
     }
 
     @DeleteMapping("/{id}")
