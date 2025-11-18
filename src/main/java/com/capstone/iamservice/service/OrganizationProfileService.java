@@ -1,5 +1,6 @@
 package com.capstone.iamservice.service;
 
+import com.capstone.iamservice.dto.response.AddressInfo;
 import com.capstone.iamservice.dto.request.*;
 import com.capstone.iamservice.dto.response.OrganizationProfileResponse;
 import com.capstone.iamservice.entity.OrganizationProfile;
@@ -89,8 +90,7 @@ public class OrganizationProfileService {
     }
 
     public OrganizationProfileResponse getOrganizationById(Long id) {
-        OrganizationProfile organization = organizationRepository.findByIdWithDetails(id)
-                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Organization not found"));
+        OrganizationProfile organization = organizationUtil.getOrgProfileOrElseThrow(id);
 
         return mapToResponse(organization);
     }

@@ -44,11 +44,11 @@ public class OrganizationProfile {
     private String businessAddress;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ward_code", referencedColumnName = "code")
+    @JoinColumn(name = "ward_code", referencedColumnName = "code", nullable = false)
     private Ward ward;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "province_code", referencedColumnName = "code")
+    @JoinColumn(name = "province_code", referencedColumnName = "code",  nullable = false)
     private Province province;
 
     @Column(length = 10)

@@ -20,15 +20,6 @@ public interface OrganizationProfileRepository extends JpaRepository<Organizatio
 
     boolean existsByTaxCode(String taxCode);
 
-    @Query("SELECT o FROM OrganizationProfile o " +
-            "LEFT JOIN FETCH o.user u " +
-            "LEFT JOIN FETCH o.ward w " +
-            "LEFT JOIN FETCH w.province " +
-            "LEFT JOIN FETCH o.province " +
-            "WHERE o.id = :id")
-    Optional<OrganizationProfile> findByIdWithDetails(@Param("id") Long id);
-
-
     @Query("""
     SELECT o FROM OrganizationProfile o
     WHERE (:status IS NULL OR o.status = :status)

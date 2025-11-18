@@ -1,6 +1,7 @@
 package com.capstone.iamservice.service;
 
 import com.capstone.iamservice.dto.BaseResponse;
+import com.capstone.iamservice.dto.event.OtpEvent;
 import com.capstone.iamservice.entity.OtpToken;
 import com.capstone.iamservice.entity.User;
 import com.capstone.iamservice.exception.AppException;
@@ -10,6 +11,7 @@ import com.capstone.iamservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class OtpService {
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final KafkaTemplate<String, OtpEvent> kafkaTemplate;
 
     @Value("${app.otp.expiration-minutes:5}")
     private int otpExpirationMinutes;
@@ -75,7 +78,12 @@ public class OtpService {
     @Transactional
     public BaseResponse<Void> sendForgotPasswordOtp(String email) {
         String otpCode = createOtp(email, OtpToken.OtpType.FORGOT_PASSWORD);
-        emailService.sendForgotPasswordOtp(email, otpCode);
+
+        OtpEvent event = OtpEvent.builder()
+                .email(email)
+                .otpCode(otpCode)
+                .build();
+        kafkaTemplate.send("otp-topic", event);
 
         return BaseResponse.ok("Mã OTP đã được gửi đến email của bạn", null);
     }

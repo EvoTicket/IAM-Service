@@ -1,6 +1,6 @@
 package com.capstone.iamservice.util;
 
-import com.capstone.iamservice.dto.request.AddressInfo;
+import com.capstone.iamservice.dto.response.AddressInfo;
 import com.capstone.iamservice.entity.Province;
 import com.capstone.iamservice.entity.Ward;
 import com.capstone.iamservice.exception.AppException;

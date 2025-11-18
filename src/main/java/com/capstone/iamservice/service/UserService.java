@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final UserUtil userUtil;
     private final Cloudinary cloudinary;
 
@@ -43,29 +42,6 @@ public class UserService {
                 .map(this::mapToUserResponse);
     }
 
-    @Transactional
-    public UserResponse addRoleToUser(Long userId, Long roleId) {
-        User user = userUtil.getUserOrThrow(userId);
-
-        Role role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Không tìm thấy role với ID: " + roleId));
-
-        user.getRoles().add(role);
-        User savedUser = userRepository.save(user);
-        return mapToUserResponse(savedUser);
-    }
-
-    @Transactional
-    public UserResponse removeRoleFromUser(Long userId, Long roleId) {
-        User user = userUtil.getUserOrThrow(userId);
-
-        Role role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Không tìm thấy role với ID: " + roleId));
-
-        user.getRoles().remove(role);
-        User savedUser = userRepository.save(user);
-        return mapToUserResponse(savedUser);
-    }
 
     @Transactional
     public void deleteUser(Long id) {
