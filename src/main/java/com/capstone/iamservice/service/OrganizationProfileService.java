@@ -11,6 +11,7 @@ import com.capstone.iamservice.enums.OrganizationStatus;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
 import com.capstone.iamservice.repository.OrganizationProfileRepository;
+import com.capstone.iamservice.repository.UserRepository;
 import com.capstone.iamservice.util.LocationUtil;
 import com.capstone.iamservice.util.OrganizationUtil;
 import com.capstone.iamservice.util.UserUtil;
@@ -36,6 +37,7 @@ import java.util.UUID;
 public class OrganizationProfileService {
 
     private final OrganizationProfileRepository organizationRepository;
+    private final UserRepository userRepository;
     private final Cloudinary cloudinary;
     private final OrganizationUtil organizationUtil;
     private final LocationUtil locationUtil;
@@ -84,8 +86,10 @@ public class OrganizationProfileService {
                 .status(OrganizationStatus.PENDING)
                 .build();
 
-        organization = organizationRepository.save(organization);
+        organization = organizationRepository.saveAndFlush(organization);
 
+        user.setOrganizationProfile(organization);
+        userRepository.save(user);
         return mapToResponse(organization);
     }
 
