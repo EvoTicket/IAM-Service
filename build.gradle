@@ -56,8 +56,7 @@ dependencies {
 
 	implementation 'com.cloudinary:cloudinary-core:1.38.0'
 	implementation 'com.cloudinary:cloudinary-http44:1.38.0'
-
-	implementation 'org.springframework.kafka:spring-kafka'
+    
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("io.lettuce:lettuce-core")
 
