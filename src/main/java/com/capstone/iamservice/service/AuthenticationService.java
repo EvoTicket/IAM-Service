@@ -64,10 +64,11 @@ public class AuthenticationService {
                 .avatarUrl(defaultAvatarUrl)
                 .build();
 
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
         String jwtToken = jwtService.generateToken(user);
 
         WelcomeEvent event = WelcomeEvent.builder()
+                .userId(user.getId())
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .username(user.getEmail())

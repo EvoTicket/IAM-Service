@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class WelcomeEvent {
+    Long userId;
     String email;
     String fullName;
     String username;
