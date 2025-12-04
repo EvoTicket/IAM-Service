@@ -1,5 +1,7 @@
 package com.capstone.iamservice.test;
 
+import com.capstone.iamservice.exception.AppException;
+import com.capstone.iamservice.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,24 +28,21 @@ public class RedisStreamProducer {
      */
     public void sendMessage(String streamKey, Object message) {
         try {
-            // Convert object to Map
             Map<String, String> messageMap = new HashMap<>();
             messageMap.put("payload", objectMapper.writeValueAsString(message));
             messageMap.put("timestamp", String.valueOf(System.currentTimeMillis()));
 
-            // Tạo record
-            ObjectRecord<String, Map<String, String>> record = StreamRecords
+            ObjectRecord<String, Map<String, String>> objectRecord = StreamRecords
                     .newRecord()
                     .ofObject(messageMap)
                     .withStreamKey(streamKey);
 
-            // Gửi vào stream
-            redisTemplate.opsForStream().add(record);
+            redisTemplate.opsForStream().add(objectRecord);
 
             log.info("Message sent to stream '{}': {}", streamKey, message);
         } catch (Exception e) {
             log.error("Error sending message to stream '{}'", streamKey, e);
-            throw new RuntimeException("Failed to send message", e);
+            throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR, "Failed to send message", e);
         }
     }
 
@@ -57,17 +56,17 @@ public class RedisStreamProducer {
             messageMap.put("payload", objectMapper.writeValueAsString(message));
             messageMap.put("timestamp", String.valueOf(System.currentTimeMillis()));
 
-            ObjectRecord<String, Map<String, String>> record = StreamRecords
+            ObjectRecord<String, Map<String, String>> objectRecord = StreamRecords
                     .newRecord()
                     .ofObject(messageMap)
                     .withStreamKey(streamKey);
 
-            redisTemplate.opsForStream().add(record);
+            redisTemplate.opsForStream().add(objectRecord);
 
             log.info("Message with key '{}' sent to stream '{}': {}", messageKey, streamKey, message);
         } catch (Exception e) {
             log.error("Error sending message to stream '{}'", streamKey, e);
-            throw new RuntimeException("Failed to send message", e);
+            throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR, "Failed to send message", e);
         }
     }
 }

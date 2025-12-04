@@ -1,5 +1,6 @@
 package com.capstone.iamservice.service;
 
+import com.capstone.iamservice.dto.event.WelcomeEvent;
 import com.capstone.iamservice.dto.request.AuthenticationRequest;
 import com.capstone.iamservice.dto.response.AuthenticationResponse;
 import com.capstone.iamservice.dto.request.RegisterRequest;
@@ -11,6 +12,7 @@ import com.capstone.iamservice.exception.ErrorCode;
 import com.capstone.iamservice.security.JwtService;
 import com.capstone.iamservice.repository.RoleRepository;
 import com.capstone.iamservice.repository.UserRepository;
+import com.capstone.iamservice.test.RedisStreamProducer;
 import com.capstone.iamservice.util.LocationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +34,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final LocationUtil locationUtil;
     private final AuthenticationManager authenticationManager;
+    private final RedisStreamProducer redisStreamProducer;
 
     @Value("${app.default.avatarUrl}")
     String defaultAvatarUrl;
@@ -61,8 +64,17 @@ public class AuthenticationService {
                 .avatarUrl(defaultAvatarUrl)
                 .build();
 
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
         String jwtToken = jwtService.generateToken(user);
+
+        WelcomeEvent event = WelcomeEvent.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .username(user.getEmail())
+                .build();
+
+        redisStreamProducer.sendMessage("welcome-signup", event);
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)

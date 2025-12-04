@@ -8,10 +8,10 @@ import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
 import com.capstone.iamservice.repository.OtpTokenRepository;
 import com.capstone.iamservice.repository.UserRepository;
+import com.capstone.iamservice.test.RedisStreamProducer;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class OtpService {
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final KafkaTemplate<String, OtpEvent> kafkaTemplate;
+    private final RedisStreamProducer redisStreamProducer;
 
     @Value("${app.otp.expiration-minutes:5}")
     private int otpExpirationMinutes;
@@ -83,7 +83,8 @@ public class OtpService {
                 .email(email)
                 .otpCode(otpCode)
                 .build();
-        kafkaTemplate.send("otp-topic", event);
+
+        redisStreamProducer.sendMessage("forgot-password-otp", event);
 
         return BaseResponse.ok("Mã OTP đã được gửi đến email của bạn", null);
     }
