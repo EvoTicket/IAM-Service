@@ -20,7 +20,6 @@ public class OrganizationProfileClientController {
     private final OrganizationUtil organizationUtil;
     private final LocationUtil locationUtil;
 
-    @Deprecated(forRemoval = true)
     @GetMapping("/{id}")
     public ResponseEntity<OrgClientResponse> getOrganizationById(@PathVariable Long id) {
         OrganizationProfile organization = organizationUtil.getOrgProfileOrElseThrow(id);

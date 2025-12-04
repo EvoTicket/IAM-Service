@@ -59,7 +59,6 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/otp/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/locations/**").permitAll()
-                        .requestMatchers("/client/**").permitAll()
 
                         .anyRequest().authenticated()
                 )
