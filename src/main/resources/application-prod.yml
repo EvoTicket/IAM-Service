@@ -2,3 +2,8 @@ eureka:
   client:
     service-url:
       defaultZone: https://server-discovery.onrender.com/eureka/
+
+spring:
+  data:
+    redis:
+      url: ${REDIS_URL_PROD}
