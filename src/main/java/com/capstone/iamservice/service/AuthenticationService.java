@@ -12,7 +12,7 @@ import com.capstone.iamservice.exception.ErrorCode;
 import com.capstone.iamservice.security.JwtService;
 import com.capstone.iamservice.repository.RoleRepository;
 import com.capstone.iamservice.repository.UserRepository;
-import com.capstone.iamservice.test.RedisStreamProducer;
+import com.capstone.iamservice.producer.RedisStreamProducer;
 import com.capstone.iamservice.util.LocationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

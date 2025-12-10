@@ -1,4 +1,4 @@
-package com.capstone.iamservice.controller;
+package com.capstone.iamservice.client;
 
 import com.capstone.iamservice.dto.response.AddressInfo;
 import com.capstone.iamservice.dto.response.OrgClientResponse;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/client/organizations")
 @RequiredArgsConstructor
-public class OrganizationProfileClientController {
+public class OrganizationProfileClient {
 
     private final OrganizationUtil organizationUtil;
     private final LocationUtil locationUtil;

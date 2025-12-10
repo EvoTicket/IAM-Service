@@ -1,4 +1,4 @@
-package com.capstone.iamservice.test;
+package com.capstone.iamservice.producer;
 
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;

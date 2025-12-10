@@ -8,7 +8,7 @@ import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
 import com.capstone.iamservice.repository.OtpTokenRepository;
 import com.capstone.iamservice.repository.UserRepository;
-import com.capstone.iamservice.test.RedisStreamProducer;
+import com.capstone.iamservice.producer.RedisStreamProducer;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
