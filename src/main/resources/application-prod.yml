@@ -2,10 +2,9 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_URL}
-    fetch-registry: true
-    register-with-eureka: true
   instance:
-    prefer-ip-address: true
+    prefer-ip-address: false
+    hostname: ${IAM_HOSTNAME}
 
 spring:
   data:
