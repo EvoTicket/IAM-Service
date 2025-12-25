@@ -8,6 +8,8 @@ eureka:
   instance:
     prefer-ip-address: false
     hostname: ${IAM_HOSTNAME}
+    non-secure-port: 443
+    secure-port-enabled: true
 
 spring:
   data:
