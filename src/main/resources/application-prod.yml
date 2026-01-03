@@ -1,15 +1,9 @@
-server:
-  port: ${PORT:8089}
-
 eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_URL}
   instance:
-    prefer-ip-address: false
-    hostname: ${IAM_HOSTNAME}
-    non-secure-port: 443
-    secure-port-enabled: true
+    prefer-ip-address: true
 
 spring:
   data:
