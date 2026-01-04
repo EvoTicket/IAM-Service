@@ -21,7 +21,7 @@ public class LocationController {
     }
 
     @GetMapping("/wards")
-    public List<Ward> getWardsByProvinceCode(@RequestParam("provinceCode") Integer provinceCode) {
+    public List<Ward> getWardsByProvinceCode(@RequestParam(value = "provinceCode", required = false) Integer provinceCode) {
         return locationService.getWardsByProvinceCode(provinceCode);
     }
 }

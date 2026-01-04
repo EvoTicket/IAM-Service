@@ -20,6 +20,7 @@ public class LocationService {
     }
 
     public List<Ward> getWardsByProvinceCode(Integer provinceCode) {
-        return wardRepository.findByProvinceCode(provinceCode);
+        if(provinceCode != null ) return wardRepository.findByProvinceCode(provinceCode);
+        else return wardRepository.findAll();
     }
 }
