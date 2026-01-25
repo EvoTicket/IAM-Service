@@ -1,4 +1,4 @@
-package com.capstone.iamservice.dto.response;
+package com.capstone.iamservice.client;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserClientResponse {
+public class UserInternalResponse {
     String userFullName;
     String userAvatarUrl;
 }

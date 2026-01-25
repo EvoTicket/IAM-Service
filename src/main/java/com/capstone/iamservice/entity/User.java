@@ -10,7 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.Set;
@@ -84,10 +84,10 @@ public class User implements UserDetails {
     private Boolean enabled = true;
 
     @Column(name = "created_at")
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
@@ -103,13 +103,13 @@ public class User implements UserDetails {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = OffsetDateTime.now(ZoneOffset.ofHours(7));
-        updatedAt = OffsetDateTime.now(ZoneOffset.ofHours(7));
+        createdAt = LocalDateTime.now(ZoneOffset.ofHours(7));
+        updatedAt = LocalDateTime.now(ZoneOffset.ofHours(7));
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = OffsetDateTime.now(ZoneOffset.ofHours(7));
+        updatedAt = LocalDateTime.now(ZoneOffset.ofHours(7));
     }
 
     @Override

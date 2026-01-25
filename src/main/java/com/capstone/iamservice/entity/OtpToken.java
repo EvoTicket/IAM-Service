@@ -1,9 +1,10 @@
 package com.capstone.iamservice.entity;
 
+import com.capstone.iamservice.enums.OtpType;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Entity
@@ -24,24 +25,21 @@ public class OtpToken {
     private String otpCode;
 
     @Column(nullable = false)
-    private OffsetDateTime expiryTime;
+    private LocalDateTime expiryTime;
 
     @Column(nullable = false)
     private boolean used = false;
 
+    @Column(nullable = false)
+    private int verificationAttempts = 0;
+
     @Enumerated(EnumType.STRING)
     private OtpType type;
 
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = OffsetDateTime.now(ZoneOffset.ofHours(7));
-    }
-
-    public enum OtpType {
-        PASSWORD_RESET,
-        FORGOT_PASSWORD,
-        EMAIL_VERIFICATION
+        createdAt = LocalDateTime.now(ZoneOffset.ofHours(7));
     }
 }

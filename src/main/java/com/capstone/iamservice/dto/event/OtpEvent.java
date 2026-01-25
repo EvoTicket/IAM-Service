@@ -8,5 +8,6 @@ import lombok.*;
 @Builder
 public class OtpEvent {
     String email;
+    String fullName;
     String otpCode;
 }

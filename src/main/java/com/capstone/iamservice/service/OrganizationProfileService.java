@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
@@ -195,7 +195,7 @@ public class OrganizationProfileService {
         organization.setRejectionReason(request.getRejectionReason());
 
         if (request.getStatus() == OrganizationStatus.VERIFIED) {
-            organization.setVerifiedAt(OffsetDateTime.now(ZoneOffset.ofHours(7)));
+            organization.setVerifiedAt(LocalDateTime.now(ZoneOffset.ofHours(7)));
         }
 
         organization = organizationRepository.save(organization);

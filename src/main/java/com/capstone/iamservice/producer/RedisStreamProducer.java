@@ -21,11 +21,6 @@ public class RedisStreamProducer {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    /**
-     * Gửi message vào Redis Stream
-     * @param streamKey Tên stream (tương tự topic trong Kafka)
-     * @param message Nội dung message
-     */
     public void sendMessage(String streamKey, Object message) {
         try {
             Map<String, String> messageMap = new HashMap<>();
@@ -46,9 +41,6 @@ public class RedisStreamProducer {
         }
     }
 
-    /**
-     * Gửi message với key cụ thể (cho partitioning)
-     */
     public void sendMessageWithKey(String streamKey, String messageKey, Object message) {
         try {
             Map<String, String> messageMap = new HashMap<>();

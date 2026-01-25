@@ -1,18 +1,16 @@
-package com.capstone.iamservice.dto.response;
+package com.capstone.iamservice.client;
 
-import com.capstone.iamservice.enums.OrganizationStatus;
+import com.capstone.iamservice.dto.response.AddressInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.OffsetDateTime;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrgClientResponse {
+public class OrgInternalResponse {
     private Long id;
     private String organizationName;
     private String logoUrl;

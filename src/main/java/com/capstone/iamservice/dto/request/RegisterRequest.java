@@ -1,7 +1,5 @@
 package com.capstone.iamservice.dto.request;
 
-import com.capstone.iamservice.entity.Province;
-import com.capstone.iamservice.entity.Ward;
 import com.capstone.iamservice.enums.Gender;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoleResponse {
-    private Long id;
-    private String name;
-    private String description;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+public class OtpResponse {
+    private Long otpId;
+    private String email;
+    private String message;
+    private LocalDateTime expiryTime;
+    private Integer remainingAttempts;
 }

@@ -5,7 +5,7 @@ import com.capstone.iamservice.entity.Role;
 import com.capstone.iamservice.entity.User;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
-import com.capstone.iamservice.repository.RoleRepository;
+
 import com.capstone.iamservice.repository.UserRepository;
 import com.capstone.iamservice.util.UserUtil;
 import com.cloudinary.Cloudinary;
@@ -33,7 +33,8 @@ public class UserService {
 
     public UserResponse getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "không tìm thấy người dúng với email: " + email ));
+                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND,
+                        "không tìm thấy người dúng với email: " + email));
         return mapToUserResponse(user);
     }
 
@@ -41,7 +42,6 @@ public class UserService {
         return userRepository.findAll(pageable)
                 .map(this::mapToUserResponse);
     }
-
 
     @Transactional
     public void deleteUser(Long id) {
@@ -65,7 +65,7 @@ public class UserService {
 
         Map<String, Object> options = new HashMap<>();
         options.put("resource_type", "image");
-        options.put("folder",  folder);
+        options.put("folder", folder);
         options.put("public_id", publicId);
         options.put("overwrite", true);
 

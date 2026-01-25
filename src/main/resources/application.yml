@@ -4,21 +4,17 @@ server:
 spring:
   application:
     name: iam-service
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: evoticket.work@gmail.com
-    password: ${EMAIL_PASS}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
   security:
     jwt:
       secret-key: ${JWT_SECRET_KEY}
       expiration-time: 86400000 # 24 hours
+    internal:
+      secret-key: ${INTERNAL_SERVICE_SECRET_KEY}
+      token-expiration: 3600000
+      enabled: true
+      service-name: iam-service
+      allowed-services:
+        - inventory-service
   data:
     redis:
       url: ${REDIS_URL}

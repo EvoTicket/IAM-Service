@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Entity
@@ -73,23 +73,23 @@ public class OrganizationProfile {
     private String rejectionReason;
 
     @Column
-    private OffsetDateTime verifiedAt;
+    private LocalDateTime verifiedAt;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = OffsetDateTime.now(ZoneOffset.ofHours(7));
-        updatedAt = OffsetDateTime.now(ZoneOffset.ofHours(7));
+        createdAt = LocalDateTime.now(ZoneOffset.ofHours(7));
+        updatedAt = LocalDateTime.now(ZoneOffset.ofHours(7));
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = OffsetDateTime.now(ZoneOffset.ofHours(7));
+        updatedAt = LocalDateTime.now(ZoneOffset.ofHours(7));
     }
 
     public String getFullAddress() {

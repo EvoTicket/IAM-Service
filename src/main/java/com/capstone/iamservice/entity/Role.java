@@ -3,7 +3,7 @@ package com.capstone.iamservice.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Entity
@@ -25,19 +25,19 @@ public class Role {
     private String description;
 
     @Column(name = "created_at")
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = OffsetDateTime.now(ZoneOffset.ofHours(7));
-        updatedAt = OffsetDateTime.now(ZoneOffset.ofHours(7));
+        createdAt = LocalDateTime.now(ZoneOffset.ofHours(7));
+        updatedAt = LocalDateTime.now(ZoneOffset.ofHours(7));
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = OffsetDateTime.now(ZoneOffset.ofHours(7));
+        updatedAt = LocalDateTime.now(ZoneOffset.ofHours(7));
     }
 }

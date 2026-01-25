@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -29,7 +29,7 @@ public class OrganizationProfileResponse {
     private String businessLicenseUrl;
     private OrganizationStatus status;
     private String rejectionReason;
-    private OffsetDateTime verifiedAt;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime verifiedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

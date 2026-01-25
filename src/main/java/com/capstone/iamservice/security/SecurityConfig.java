@@ -1,5 +1,6 @@
 package com.capstone.iamservice.security;
 
+import com.capstone.iamservice.security.internal.InternalAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final InternalAuthenticationFilter internalAuthenticationFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -58,10 +60,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN", "USER")
 
                         .requestMatchers("/api/otp/**").permitAll()
+
+                        .requestMatchers("/api/internal/**").hasRole("INTERNAL_SERVICE")
+
                         .requestMatchers(HttpMethod.GET, "/api/locations/**").permitAll()
 
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(internalAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
