@@ -4,3 +4,8 @@ eureka:
       defaultZone: ${EUREKA_URL}
   instance:
     prefer-ip-address: true
+
+spring:
+  data:
+    redis:
+      url: ${REDIS_PROD_URL}

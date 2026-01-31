@@ -99,7 +99,8 @@ public class RedisStreamConfig {
         StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
                 StreamMessageListenerContainerOptions
                         .builder()
-                        .pollTimeout(Duration.ofMillis(100))
+                        .pollTimeout(Duration.ofSeconds(5))
+                        .batchSize(10)
                         .build();
 
         return StreamMessageListenerContainer.create(factory, options);

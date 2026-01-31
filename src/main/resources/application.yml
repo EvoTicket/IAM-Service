@@ -21,9 +21,9 @@ spring:
       timeout: 2000ms
       lettuce:
         pool:
-          max-active: 8
-          max-idle: 8
-          min-idle: 0
+          max-active: 16
+          max-idle: 16
+          min-idle: 4
           max-wait: -1ms
   datasource:
     url: ${DB_URL}
@@ -58,10 +58,6 @@ cloudinary:
   api-secret: ${CLOUDINARY_SECRET}
 
 app:
-  otp:
-    expiration-minutes: 5
-    length: 6
-    cooldown-minutes: 1
   default:
     avatarUrl: https://toplist.vn/images/800px/cua-106572.jpg
     orgAvatarUrl: https://th.bing.com/th/id/OIP.P1VHAo9uzl4vsNI3BWQZBAHaEK?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3
