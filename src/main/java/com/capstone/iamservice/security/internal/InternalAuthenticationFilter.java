@@ -39,7 +39,7 @@ public class InternalAuthenticationFilter extends OncePerRequestFilter {
         String requestPath = request.getRequestURI();
         String internalToken = request.getHeader(INTERNAL_TOKEN_HEADER);
 
-        boolean isInternalApi = requestPath.contains(INTERNAL_API_PATH);
+        boolean isInternalApi = request.getRequestURI().contains("/api/internal/");
 
         // If internal token is present, validate it
         if (internalToken != null && !internalToken.isEmpty()) {
