@@ -8,6 +8,7 @@ import com.capstone.iamservice.dto.response.OtpResponse;
 import com.capstone.iamservice.entity.OtpRateLimit;
 import com.capstone.iamservice.entity.OtpToken;
 import com.capstone.iamservice.entity.User;
+import com.capstone.iamservice.enums.AuthProvider;
 import com.capstone.iamservice.enums.OtpType;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
@@ -48,6 +49,11 @@ public class PasswordService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(
                         () -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Email không tồn tại trong hệ thống"));
+
+        if (user.getAuthProvider() == AuthProvider.GOOGLE) {
+            throw new AppException(ErrorCode.BAD_REQUEST,
+                    "Tài khoản đăng nhập qua Google không hỗ trợ đổi mật khẩu");
+        }
 
         checkRateLimitAndBruteForce(email);
 
@@ -128,6 +134,11 @@ public class PasswordService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(
                         () -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Email không tồn tại trong hệ thống"));
+
+        if (user.getAuthProvider() == AuthProvider.GOOGLE) {
+            throw new AppException(ErrorCode.BAD_REQUEST,
+                    "Tài khoản đăng nhập qua Google không hỗ trợ đổi mật khẩu");
+        }
 
         OtpToken otpToken = otpTokenRepository.findTopByEmailAndTypeAndUsedFalseOrderByCreatedAtDesc(email, otpType)
                 .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Không tìm thấy mã OTP hợp lệ"));

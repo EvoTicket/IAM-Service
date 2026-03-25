@@ -2,9 +2,11 @@ package com.capstone.iamservice.controller;
 
 import com.capstone.iamservice.dto.BaseResponse;
 import com.capstone.iamservice.dto.request.AuthenticationRequest;
+import com.capstone.iamservice.dto.request.GoogleLoginRequest;
 import com.capstone.iamservice.dto.response.AuthenticationResponse;
 import com.capstone.iamservice.dto.request.RegisterRequest;
 import com.capstone.iamservice.service.AuthenticationService;
+import com.capstone.iamservice.service.GoogleAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final GoogleAuthService googleAuthService;
 
     @PostMapping("/register")
     @Operation(summary = "Đăng ký tài khoản mới")
@@ -54,5 +57,20 @@ public class AuthenticationController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(BaseResponse.ok("Đăng nhập thành công", response));
+    }
+
+    @PostMapping("/google")
+    @Operation(summary = "Đăng nhập bằng Google")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Đăng nhập Google thành công"),
+            @ApiResponse(responseCode = "401", description = "Access token Google không hợp lệ")
+    })
+    public ResponseEntity<BaseResponse<AuthenticationResponse>> loginWithGoogle(
+            @Valid @RequestBody GoogleLoginRequest request) {
+
+        AuthenticationResponse response = googleAuthService.processGoogleLogin(request.getAccessToken());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(BaseResponse.ok("Đăng nhập Google thành công", response));
     }
 }
