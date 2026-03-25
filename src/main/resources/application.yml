@@ -8,7 +8,9 @@ spring:
   security:
     jwt:
       secret-key: ${JWT_SECRET_KEY}
-      expiration-time: 86400000 # 24 hours
+      expiration-time: 3600000
+      refresh-token:
+        expiration-time: 604800000
     internal:
       secret-key: ${INTERNAL_SERVICE_SECRET_KEY}
       token-expiration: 3600000

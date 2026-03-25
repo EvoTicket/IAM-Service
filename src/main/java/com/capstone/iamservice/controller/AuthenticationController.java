@@ -3,10 +3,12 @@ package com.capstone.iamservice.controller;
 import com.capstone.iamservice.dto.BaseResponse;
 import com.capstone.iamservice.dto.request.AuthenticationRequest;
 import com.capstone.iamservice.dto.request.GoogleLoginRequest;
+import com.capstone.iamservice.dto.request.RefreshTokenRequest;
 import com.capstone.iamservice.dto.response.AuthenticationResponse;
 import com.capstone.iamservice.dto.request.RegisterRequest;
 import com.capstone.iamservice.service.AuthenticationService;
 import com.capstone.iamservice.service.GoogleAuthService;
+import com.capstone.iamservice.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -28,6 +30,7 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final GoogleAuthService googleAuthService;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/register")
     @Operation(summary = "Đăng ký tài khoản mới")
@@ -72,5 +75,36 @@ public class AuthenticationController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(BaseResponse.ok("Đăng nhập Google thành công", response));
+    }
+
+    @PostMapping("/refresh-token")
+    @Operation(summary = "Làm mới access token",
+            description = "Dùng refresh token để cấp lại access token mới. Refresh token cũ sẽ bị huỷ và một refresh token mới được cấp (token rotation).")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Làm mới token thành công"),
+            @ApiResponse(responseCode = "401", description = "Refresh token không hợp lệ hoặc đã hết hạn")
+    })
+    public ResponseEntity<BaseResponse<AuthenticationResponse>> refreshToken(
+            @Valid @RequestBody RefreshTokenRequest request) {
+
+        AuthenticationResponse response = refreshTokenService.refresh(request.getRefreshToken());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(BaseResponse.ok("Làm mới token thành công", response));
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "Đăng xuất", description = "Thu hồi refresh token, buộc client phải đăng nhập lại")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Đăng xuất thành công"),
+            @ApiResponse(responseCode = "400", description = "Refresh token không tồn tại")
+    })
+    public ResponseEntity<BaseResponse<Void>> logout(
+            @Valid @RequestBody RefreshTokenRequest request) {
+
+        refreshTokenService.revoke(request.getRefreshToken());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(BaseResponse.ok("Đăng xuất thành công", null));
     }
 }

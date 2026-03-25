@@ -35,6 +35,7 @@ public class AuthenticationService {
     private final LocationUtil locationUtil;
     private final AuthenticationManager authenticationManager;
     private final RedisStreamProducer redisStreamProducer;
+    private final RefreshTokenService refreshTokenService;
 
     @Value("${app.default.avatarUrl}")
     String defaultAvatarUrl;
@@ -65,7 +66,8 @@ public class AuthenticationService {
                 .build();
 
         userRepository.saveAndFlush(user);
-        String jwtToken = jwtService.generateToken(user);
+        String jwtToken      = jwtService.generateToken(user);
+        String refreshToken  = refreshTokenService.createRefreshToken(user.getEmail());
 
         WelcomeEvent event = WelcomeEvent.builder()
                 .userId(user.getId())
@@ -78,6 +80,7 @@ public class AuthenticationService {
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
@@ -92,10 +95,12 @@ public class AuthenticationService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Không tìm thấy user"));
 
-        String jwtToken = jwtService.generateToken(user);
+        String jwtToken     = jwtService.generateToken(user);
+        String refreshToken = refreshTokenService.createRefreshToken(user.getEmail());
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 }

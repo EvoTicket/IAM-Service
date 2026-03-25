@@ -33,6 +33,7 @@ public class GoogleAuthService {
     private final RoleRepository roleRepository;
     private final JwtService jwtService;
     private final WebClient webClient;
+    private final RefreshTokenService refreshTokenService;
 
     private static final String GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
 
@@ -69,10 +70,12 @@ public class GoogleAuthService {
         }
 
         // 5. Sinh JWT token của hệ thống và trả về (giống login thường)
-        String jwtToken = jwtService.generateToken(user);
+        String jwtToken     = jwtService.generateToken(user);
+        String refreshToken = refreshTokenService.createRefreshToken(user.getEmail());
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
