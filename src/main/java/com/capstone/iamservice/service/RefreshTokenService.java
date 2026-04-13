@@ -85,12 +85,9 @@ public class RefreshTokenService {
      */
     public void revoke(String refreshToken) {
         String key     = KEY_PREFIX + refreshToken;
-        Boolean exists = stringRedisTemplate.hasKey(key);
+        boolean exists = stringRedisTemplate.hasKey(key);
 
-        if (!exists) {
-            throw new AppException(ErrorCode.BAD_REQUEST,
-                    "Refresh token không tồn tại hoặc đã hết hạn");
-        }
+        if (!exists) throw new AppException(ErrorCode.BAD_REQUEST, "Refresh token không tồn tại hoặc đã hết hạn");
 
         stringRedisTemplate.delete(key);
         log.info("Refresh token revoked");
