@@ -14,4 +14,9 @@ public class FallbackController {
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body("IAM Service đang bận, vui lòng thử lại sau");
     }
+
+    @GetMapping("/test-500")
+    public String testError() {
+        throw new RuntimeException("Test 500 error");
+    }
 }
