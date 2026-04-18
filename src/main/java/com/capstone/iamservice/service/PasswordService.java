@@ -36,6 +36,8 @@ public class PasswordService {
     private final PasswordEncoder passwordEncoder;
     private final RedisStreamProducer redisStreamProducer;
 
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     private static final int OTP_EXPIRY_MINUTES = 5;
     private static final int RATE_LIMIT_MINUTES = 3;
     private static final int MAX_ATTEMPTS_PER_HOUR = 5;
@@ -225,11 +227,10 @@ public class PasswordService {
     }
 
     private String generateOtpCode() {
-        SecureRandom random = new SecureRandom();
         StringBuilder otp = new StringBuilder();
 
         for (int i = 0; i < OTP_LENGTH; i++) {
-            otp.append(random.nextInt(10));
+            otp.append(RANDOM.nextInt(10));
         }
 
         return otp.toString();

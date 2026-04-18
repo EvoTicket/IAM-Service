@@ -35,6 +35,12 @@ public class DataInitializer implements CommandLineRunner {
     @Value("${app.default.avatarUrl}")
     String defaultAvatarUrl;
 
+    @Value("${app.admin.email}")
+    String adminEmail;
+
+    @Value("${app.admin.password}")
+    String adminPassword;
+
     @Override
     @Transactional
     public void run(String... args) {
@@ -69,7 +75,7 @@ public class DataInitializer implements CommandLineRunner {
 
             User adminUser = User.builder()
                     .email("admin@example.com")
-                    .password(passwordEncoder.encode("admin1234"))
+                    .password(passwordEncoder.encode())
                     .firstName("Admin")
                     .lastName("User")
                     .enabled(true)

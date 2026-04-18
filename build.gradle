@@ -38,7 +38,7 @@ dependencies {
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate6'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	runtimeOnly 'org.postgresql:postgresql'
-
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-registry-prometheus'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
