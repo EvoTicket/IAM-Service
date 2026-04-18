@@ -74,8 +74,8 @@ public class DataInitializer implements CommandLineRunner {
                     .orElseThrow(() -> new RuntimeException("ADMIN role not found"));
 
             User adminUser = User.builder()
-                    .email("admin@example.com")
-                    .password(passwordEncoder.encode())
+                    .email(adminEmail)
+                    .password(passwordEncoder.encode(adminPassword))
                     .firstName("Admin")
                     .lastName("User")
                     .enabled(true)
