@@ -5,8 +5,11 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import java.awt.*;
+import java.net.URI;
+
 import org.springframework.beans.factory.annotation.Value;
+
 @Component
 @Slf4j
 public class SwaggerLauncher {
@@ -14,22 +17,23 @@ public class SwaggerLauncher {
     @Value("${swagger.host-url}")
     private String hostUrl;
 
+    @Value("${spring.profiles.active:default}")
+    private String profile;
+
     @EventListener(ApplicationReadyEvent.class)
     public void launchBrowser() {
-        String swaggerUrl = hostUrl + "/swagger-ui/index.html";
-        String os = System.getProperty("os.name").toLowerCase();
-
+        if(!"default".equals(profile)) {
+            log.info("⚠️ Not in 'dev' profile (current: '{}'), skipping Swagger UI launch.", profile);
+            return;
+        }
         try {
-            if (os.contains("win")) {
-                new ProcessBuilder("cmd", "/c", "start", swaggerUrl).start();
-            } else if (os.contains("mac")) {
-                new ProcessBuilder("open", swaggerUrl).start();
-            } else if (os.contains("nix") || os.contains("nux")) {
-                new ProcessBuilder("xdg-open", swaggerUrl).start();
+            String swaggerUrl = hostUrl + "/swagger-ui/index.html";
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().browse(new URI(swaggerUrl));
             } else {
-                log.warn("⚠️ Unknown OS — please open Swagger manually: {}", swaggerUrl);
+                log.warn("⚠️ Desktop not supported. Open manually: {}", swaggerUrl);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.warn("❌ Failed to open Swagger UI: {}", e.getMessage());
         }
     }
