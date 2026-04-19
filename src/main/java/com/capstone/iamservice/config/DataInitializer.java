@@ -69,7 +69,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void initAdminUser() {
-        if (userRepository.findByEmail("admin@example.com").isEmpty()) {
+        if (userRepository.findByEmail(adminEmail).isEmpty()) {
             Role adminRole = roleRepository.findByName("ADMIN")
                     .orElseThrow(() -> new RuntimeException("ADMIN role not found"));
 
