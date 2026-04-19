@@ -10,11 +10,9 @@ import com.capstone.iamservice.dto.request.VerifyOrganizationRequest;
 import com.capstone.iamservice.enums.OrganizationStatus;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
-import com.capstone.iamservice.security.JwtService;
 import com.capstone.iamservice.security.JwtUtil;
 import com.capstone.iamservice.service.OrganizationProfileService;
 import com.capstone.iamservice.security.TokenMetaData;
-import com.capstone.iamservice.util.UserUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -38,12 +36,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class OrganizationProfileController {
 
     private final OrganizationProfileService organizationService;
-    private final UserUtil userUtil;
-    private final JwtService jwtService;
     private final JwtUtil jwtUtil;
 
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BaseResponse<OrganizationCreationResponse>> createOrganization(
             @Valid @RequestBody CreateOrganizationRequest request) {
 
