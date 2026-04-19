@@ -3,10 +3,10 @@ package com.capstone.iamservice.controller;
 import com.capstone.iamservice.dto.BasePageResponse;
 import com.capstone.iamservice.dto.BaseResponse;
 import com.capstone.iamservice.dto.request.CreateOrganizationRequest;
+import com.capstone.iamservice.dto.response.OrganizationCreationResponse;
 import com.capstone.iamservice.dto.response.OrganizationProfileResponse;
 import com.capstone.iamservice.dto.request.UpdateOrganizationRequest;
 import com.capstone.iamservice.dto.request.VerifyOrganizationRequest;
-import com.capstone.iamservice.entity.User;
 import com.capstone.iamservice.enums.OrganizationStatus;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
@@ -32,9 +32,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/organizations")
 @RequiredArgsConstructor
@@ -47,18 +44,13 @@ public class OrganizationProfileController {
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<BaseResponse<Map<String, Object>>> createOrganization(
+    public ResponseEntity<BaseResponse<OrganizationCreationResponse>> createOrganization(
             @Valid @RequestBody CreateOrganizationRequest request) {
 
-        Long userId = jwtUtil.getDataFromAuth().userId();
+        OrganizationCreationResponse response = organizationService.createOrganization(request);
 
-        OrganizationProfileResponse response = organizationService.createOrganization(userId, request);
-        User user = userUtil.getUserOrThrow(userId);
-        Map<String, Object> result = new HashMap<>();
-        result.put("New token", jwtService.generateToken(user));
-        result.put("Response", response);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(BaseResponse.created("tạo org profile thành công", result));
+                .body(BaseResponse.created("tạo org profile thành công", response));
     }
 
 

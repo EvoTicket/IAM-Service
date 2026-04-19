@@ -2,6 +2,7 @@ package com.capstone.iamservice.service;
 
 import com.capstone.iamservice.dto.response.AddressInfo;
 import com.capstone.iamservice.dto.request.*;
+import com.capstone.iamservice.dto.response.OrganizationCreationResponse;
 import com.capstone.iamservice.dto.response.OrganizationProfileResponse;
 import com.capstone.iamservice.entity.OrganizationProfile;
 import com.capstone.iamservice.entity.Province;
@@ -12,6 +13,8 @@ import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
 import com.capstone.iamservice.repository.OrganizationProfileRepository;
 import com.capstone.iamservice.repository.UserRepository;
+import com.capstone.iamservice.security.JwtService;
+import com.capstone.iamservice.security.JwtUtil;
 import com.capstone.iamservice.util.LocationUtil;
 import com.capstone.iamservice.util.OrganizationUtil;
 import com.capstone.iamservice.util.UserUtil;
@@ -38,16 +41,19 @@ public class OrganizationProfileService {
 
     private final OrganizationProfileRepository organizationRepository;
     private final UserRepository userRepository;
+    private final UserUtil userUtil;
+    private final JwtService jwtService;
+    private final JwtUtil jwtUtil;
     private final Cloudinary cloudinary;
     private final OrganizationUtil organizationUtil;
     private final LocationUtil locationUtil;
-    private final UserUtil userUtil;
 
     @Value("${app.default.orgAvatarUrl}")
     String orgAvatarUrl;
 
     @Transactional
-    public OrganizationProfileResponse createOrganization(Long userId, CreateOrganizationRequest request) {
+    public OrganizationCreationResponse createOrganization(CreateOrganizationRequest request) {
+        Long userId = jwtUtil.getDataFromAuth().userId();
         User user = userUtil.getUserOrThrow(userId);
 
         if (organizationRepository.existsByUserId(userId)) {
@@ -88,9 +94,15 @@ public class OrganizationProfileService {
 
         organization = organizationRepository.saveAndFlush(organization);
 
+
         user.setOrganizationProfile(organization);
         userRepository.save(user);
-        return mapToResponse(organization);
+
+        String newToken = jwtService.generateToken(user);
+        return OrganizationCreationResponse.builder()
+                .newToken(newToken)
+                .organizationProfile(mapToResponse(organization))
+                .build();
     }
 
     public OrganizationProfileResponse getOrganizationById(Long id) {
