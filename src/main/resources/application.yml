@@ -61,6 +61,8 @@ cloudinary:
   api-secret: ${CLOUDINARY_SECRET}
 
 app:
+  seed:
+    enabled: false
   default:
     avatarUrl: https://toplist.vn/images/800px/cua-106572.jpg
     orgAvatarUrl: https://th.bing.com/th/id/OIP.P1VHAo9uzl4vsNI3BWQZBAHaEK?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3
