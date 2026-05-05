@@ -50,4 +50,12 @@ public class InternalController {
 
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/users/count-since")
+    public ResponseEntity<Long> getNewUsersCount(
+            @org.springframework.web.bind.annotation.RequestParam("since")
+            @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
+            java.time.LocalDateTime since
+    ) {
+        return ResponseEntity.ok(userUtil.countNewUsersSince(since));
+    }
 }

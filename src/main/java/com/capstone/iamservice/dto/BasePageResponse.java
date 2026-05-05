@@ -30,4 +30,8 @@ public class BasePageResponse<T> {
                 .last(page.isLast())
                 .build();
     }
+
+    public static <T> BasePageResponse<T> ok(Page<T> page) {
+        return fromPage(page);
+    }
 }

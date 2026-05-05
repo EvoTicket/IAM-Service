@@ -18,5 +18,7 @@ public class UserUtil {
                         ErrorCode.RESOURCE_NOT_FOUND,
                         "Không tìm thấy user với ID: " + id
                 ));
+    public long countNewUsersSince(java.time.LocalDateTime date) {
+        return userRepository.countByCreatedAtAfter(date);
     }
 }
