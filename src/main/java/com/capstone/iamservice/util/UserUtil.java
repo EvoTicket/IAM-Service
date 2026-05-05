@@ -7,6 +7,8 @@ import com.capstone.iamservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 @RequiredArgsConstructor
 public class UserUtil {
@@ -18,7 +20,10 @@ public class UserUtil {
                         ErrorCode.RESOURCE_NOT_FOUND,
                         "Không tìm thấy user với ID: " + id
                 ));
+    }
     public long countNewUsersSince(java.time.LocalDateTime date) {
         return userRepository.countByCreatedAtAfter(date);
     }
 }
+
+

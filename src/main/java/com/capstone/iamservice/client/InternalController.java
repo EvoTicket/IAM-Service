@@ -31,6 +31,7 @@ public class InternalController {
         OrgInternalResponse orgInternalResponse = OrgInternalResponse.builder()
                 .id(organization.getId())
                 .organizationName(organization.getOrganizationName())
+                .description(organization.getDescription())
                 .logoUrl(organization.getLogoUrl())
                 .addressInfo(addressInfo)
                 .businessPhone(organization.getBusinessPhone())
