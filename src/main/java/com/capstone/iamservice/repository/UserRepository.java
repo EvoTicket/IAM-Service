@@ -26,7 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
           LOWER(u.lastName) LIKE :keyword OR
           LOWER(op.organizationName) LIKE :keyword
       ))
-      AND (:since IS NULL OR u.createdAt >= :since)
+      AND (u.createdAt >= :since)
     """)
     org.springframework.data.domain.Page<User> accountSearch(
             @org.springframework.data.repository.query.Param("roleName") String roleName,
