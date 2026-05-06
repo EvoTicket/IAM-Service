@@ -38,8 +38,9 @@ public class UserManagementService {
             Pageable pageable
     ) {
         LocalDateTime since = (days != null) ? LocalDateTime.now().minusDays(days) : null;
+        String keywordPattern = (keyword != null && !keyword.trim().isEmpty()) ? "%" + keyword.toLowerCase() + "%" : null;
         
-        return userRepository.accountSearch(roleName, userStatus, orgStatus, keyword, since, pageable)
+        return userRepository.accountSearch(roleName, userStatus, orgStatus, keywordPattern, since, pageable)
                 .map(this::mapToAccountDetails);
     }
 

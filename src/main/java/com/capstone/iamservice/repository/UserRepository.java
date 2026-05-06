@@ -21,10 +21,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
       AND (:userStatus IS NULL OR u.status = :userStatus)
       AND (:orgStatus IS NULL OR op.status = :orgStatus)
       AND (:keyword IS NULL OR (
-          LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
-          LOWER(u.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
-          LOWER(u.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
-          LOWER(op.organizationName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+          LOWER(u.email) LIKE :keyword OR
+          LOWER(u.firstName) LIKE :keyword OR
+          LOWER(u.lastName) LIKE :keyword OR
+          LOWER(op.organizationName) LIKE :keyword
       ))
       AND (:since IS NULL OR u.createdAt >= :since)
     """)
