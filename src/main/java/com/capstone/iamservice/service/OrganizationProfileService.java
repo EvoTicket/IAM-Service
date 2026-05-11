@@ -6,12 +6,14 @@ import com.capstone.iamservice.dto.response.OrganizationCreationResponse;
 import com.capstone.iamservice.dto.response.OrganizationProfileResponse;
 import com.capstone.iamservice.entity.OrganizationProfile;
 import com.capstone.iamservice.entity.Province;
+import com.capstone.iamservice.entity.Role;
 import com.capstone.iamservice.entity.User;
 import com.capstone.iamservice.entity.Ward;
 import com.capstone.iamservice.enums.OrganizationStatus;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
 import com.capstone.iamservice.repository.OrganizationProfileRepository;
+import com.capstone.iamservice.repository.RoleRepository;
 import com.capstone.iamservice.repository.UserRepository;
 import com.capstone.iamservice.security.JwtService;
 import com.capstone.iamservice.security.JwtUtil;
@@ -47,6 +49,7 @@ public class OrganizationProfileService {
     private final Cloudinary cloudinary;
     private final OrganizationUtil organizationUtil;
     private final LocationUtil locationUtil;
+    private final RoleRepository roleRepository;
 
     @Value("${app.default.orgAvatarUrl}")
     String orgAvatarUrl;
@@ -94,7 +97,13 @@ public class OrganizationProfileService {
 
         organization = organizationRepository.saveAndFlush(organization);
 
+        Role organizerRole = roleRepository.findByName("ORGANIZER")
+                .orElseGet(() -> roleRepository.save(Role.builder()
+                        .name("ORGANIZER")
+                        .description("Organizer role")
+                        .build()));
 
+        user.getRoles().add(organizerRole);
         user.setOrganizationProfile(organization);
         userRepository.save(user);
 
