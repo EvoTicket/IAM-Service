@@ -37,9 +37,11 @@ public class UserManagementService {
             Integer days,
             Pageable pageable
     ) {
-        LocalDateTime since = (days != null) ? LocalDateTime.now().minusDays(days) : null;
+        // Use a far-past date instead of null to avoid PostgreSQL parameter type inference errors
+        LocalDateTime since = (days != null) ? LocalDateTime.now().minusDays(days) : LocalDateTime.of(1970, 1, 1, 0, 0);
+        String keywordPattern = (keyword != null && !keyword.trim().isEmpty()) ? "%" + keyword.toLowerCase() + "%" : null;
         
-        return userRepository.accountSearch(roleName, userStatus, orgStatus, keyword, since, pageable)
+        return userRepository.accountSearch(roleName, userStatus, orgStatus, keywordPattern, since, pageable)
                 .map(this::mapToAccountDetails);
     }
 
