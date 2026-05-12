@@ -19,6 +19,15 @@ public class UserResponse {
     private String lastName;
     private String avatarUrl;
     private String phoneNumber;
+    private java.time.LocalDate dateOfBirth;
+    private String gender;
+    private String userAddress;
+    private String wardCode;
+    private String wardName;
+    private String provinceCode;
+    private String provinceName;
+    private String fullName;
+    private String fullAddress;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Set<String> roles;

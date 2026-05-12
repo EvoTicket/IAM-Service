@@ -6,7 +6,10 @@ import com.capstone.iamservice.entity.User;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
 
+import com.capstone.iamservice.dto.request.UpdateUserRequest;
+import com.capstone.iamservice.repository.ProvinceRepository;
 import com.capstone.iamservice.repository.UserRepository;
+import com.capstone.iamservice.repository.WardRepository;
 import com.capstone.iamservice.util.UserUtil;
 import com.cloudinary.Cloudinary;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,8 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final WardRepository wardRepository;
+    private final ProvinceRepository provinceRepository;
     private final UserUtil userUtil;
     private final Cloudinary cloudinary;
 
@@ -79,6 +84,32 @@ public class UserService {
         }
     }
 
+    @Transactional
+    public UserResponse updateUser(Long userId, UpdateUserRequest request) {
+        User user = userUtil.getUserOrThrow(userId);
+
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setDateOfBirth(request.getDateOfBirth());
+        user.setGender(request.getGender());
+        user.setUserAddress(request.getUserAddress());
+
+        if (request.getWardCode() != null) {
+            user.setWard(wardRepository.findByCode(request.getWardCode())
+                    .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Không tìm thấy xã/phường")));
+        }
+
+        if (request.getProvinceCode() != null) {
+            user.setProvince(provinceRepository.findByCode(request.getProvinceCode())
+                    .orElseThrow(
+                            () -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Không tìm thấy tỉnh/thành phố")));
+        }
+
+        userRepository.save(user);
+        return mapToUserResponse(user);
+    }
+
     private UserResponse mapToUserResponse(User user) {
         Set<String> roleNames = user.getRoles().stream()
                 .map(Role::getName)
@@ -89,8 +120,17 @@ public class UserService {
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .fullName(user.getFullName())
                 .avatarUrl(user.getAvatarUrl())
                 .phoneNumber(user.getPhoneNumber())
+                .dateOfBirth(user.getDateOfBirth())
+                .gender(user.getGender() != null ? user.getGender().name() : null)
+                .userAddress(user.getUserAddress())
+                .wardCode(user.getWard() != null ? user.getWard().getCode() : null)
+                .wardName(user.getWard() != null ? user.getWard().getName() : null)
+                .provinceCode(user.getProvince() != null ? user.getProvince().getCode() : null)
+                .provinceName(user.getProvince() != null ? user.getProvince().getName() : null)
+                .fullAddress(user.getFullAddress())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .roles(roleNames)

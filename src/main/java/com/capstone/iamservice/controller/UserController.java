@@ -2,6 +2,7 @@ package com.capstone.iamservice.controller;
 
 import com.capstone.iamservice.dto.BasePageResponse;
 import com.capstone.iamservice.dto.BaseResponse;
+import com.capstone.iamservice.dto.request.UpdateUserRequest;
 import com.capstone.iamservice.dto.response.UserResponse;
 import com.capstone.iamservice.security.JwtUtil;
 import com.capstone.iamservice.service.UserService;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -51,7 +53,18 @@ public class UserController {
         UserResponse userResponse = userService.getUserByEmail(userDetails.getUsername());
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(BaseResponse.ok("Lấy thông tin người dùng thành công", userResponse));
+                .body(BaseResponse.of(HttpStatus.OK.value(), "Lấy thông tin người dùng thành công", userResponse));
+    }
+
+    @PutMapping("/me")
+    @Operation(summary = "Cập nhật thông tin người dùng")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<BaseResponse<UserResponse>> updateMe(
+            @Valid @RequestBody UpdateUserRequest request
+    ) {
+        Long userId = jwtUtil.getDataFromAuth().userId();
+        UserResponse user = userService.updateUser(userId, request);
+        return ResponseEntity.ok(BaseResponse.ok("Cập nhật thông tin thành công", user));
     }
 
     @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
