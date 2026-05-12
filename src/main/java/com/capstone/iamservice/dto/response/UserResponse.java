@@ -22,9 +22,9 @@ public class UserResponse {
     private java.time.LocalDate dateOfBirth;
     private String gender;
     private String userAddress;
-    private String wardCode;
+    private Integer wardCode;
     private String wardName;
-    private String provinceCode;
+    private Integer provinceCode;
     private String provinceName;
     private String fullName;
     private String fullAddress;

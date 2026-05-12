@@ -53,7 +53,7 @@ public class UserController {
         UserResponse userResponse = userService.getUserByEmail(userDetails.getUsername());
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(BaseResponse.of(HttpStatus.OK.value(), "Lấy thông tin người dùng thành công", userResponse));
+                .body(BaseResponse.ok("Lấy thông tin người dùng thành công", userResponse));
     }
 
     @PutMapping("/me")
