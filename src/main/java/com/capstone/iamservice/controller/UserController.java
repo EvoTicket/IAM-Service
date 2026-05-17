@@ -2,6 +2,7 @@ package com.capstone.iamservice.controller;
 
 import com.capstone.iamservice.dto.BasePageResponse;
 import com.capstone.iamservice.dto.BaseResponse;
+import com.capstone.iamservice.dto.request.UpdateUserBankRequest;
 import com.capstone.iamservice.dto.request.UpdateUserRequest;
 import com.capstone.iamservice.dto.response.UserResponse;
 import com.capstone.iamservice.security.JwtUtil;
@@ -65,6 +66,17 @@ public class UserController {
         Long userId = jwtUtil.getDataFromAuth().userId();
         UserResponse user = userService.updateUser(userId, request);
         return ResponseEntity.ok(BaseResponse.ok("Cập nhật thông tin thành công", user));
+    }
+
+    @PutMapping("/me/bank")
+    @Operation(summary = "Cập nhật thông tin ngân hàng của người dùng")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<BaseResponse<UserResponse>> updateBank(
+            @Valid @RequestBody UpdateUserBankRequest request
+    ) {
+        Long userId = jwtUtil.getDataFromAuth().userId();
+        UserResponse user = userService.updateUserBank(userId, request);
+        return ResponseEntity.ok(BaseResponse.ok("Cập nhật thông tin ngân hàng thành công", user));
     }
 
     @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

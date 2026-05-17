@@ -1,5 +1,6 @@
 package com.capstone.iamservice.client;
 
+import com.capstone.iamservice.dto.BaseResponse;
 import com.capstone.iamservice.dto.response.AddressInfo;
 import com.capstone.iamservice.entity.OrganizationProfile;
 import com.capstone.iamservice.entity.User;
@@ -7,11 +8,11 @@ import com.capstone.iamservice.util.LocationUtil;
 import com.capstone.iamservice.util.OrganizationUtil;
 import com.capstone.iamservice.util.UserUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/internal")
@@ -53,10 +54,22 @@ public class InternalController {
     }
     @GetMapping("/users/count-since")
     public ResponseEntity<Long> getNewUsersCount(
-            @org.springframework.web.bind.annotation.RequestParam("since")
-            @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
-            java.time.LocalDateTime since
+            @RequestParam("since")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime since
     ) {
         return ResponseEntity.ok(userUtil.countNewUsersSince(since));
+    }
+
+    @GetMapping("/users/{userId}/bank-info")
+    public ResponseEntity<BaseResponse<UserBankAccountResponse>> getMyBankInfo(@PathVariable Long userId) {
+        User user = userUtil.getUserOrThrow(userId);
+        UserBankAccountResponse response = UserBankAccountResponse.builder()
+                .bankCode(user.getBankCode())
+                .bankAccountNumber(user.getBankAccountNumber())
+                .bankAccountName(user.getBankAccountName())
+                .build();
+
+        return ResponseEntity.ok(BaseResponse.ok("lấy thông tin ngân hàng thành công", response));
     }
 }

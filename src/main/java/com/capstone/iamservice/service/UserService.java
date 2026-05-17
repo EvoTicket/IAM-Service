@@ -6,6 +6,7 @@ import com.capstone.iamservice.entity.User;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
 
+import com.capstone.iamservice.dto.request.UpdateUserBankRequest;
 import com.capstone.iamservice.dto.request.UpdateUserRequest;
 import com.capstone.iamservice.repository.ProvinceRepository;
 import com.capstone.iamservice.repository.UserRepository;
@@ -95,6 +96,8 @@ public class UserService {
         user.setGender(request.getGender());
         user.setUserAddress(request.getUserAddress());
 
+
+
         if (request.getWardCode() != null) {
             user.setWard(wardRepository.findByCode(request.getWardCode())
                     .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Không tìm thấy xã/phường")));
@@ -105,6 +108,18 @@ public class UserService {
                     .orElseThrow(
                             () -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Không tìm thấy tỉnh/thành phố")));
         }
+
+        userRepository.save(user);
+        return mapToUserResponse(user);
+    }
+
+    @Transactional
+    public UserResponse updateUserBank(Long userId, UpdateUserBankRequest request) {
+        User user = userUtil.getUserOrThrow(userId);
+
+        user.setBankCode(request.getBankCode());
+        user.setBankAccountNumber(request.getBankAccountNumber());
+        user.setBankAccountName(request.getBankAccountName());
 
         userRepository.save(user);
         return mapToUserResponse(user);
@@ -131,6 +146,9 @@ public class UserService {
                 .provinceCode(user.getProvince() != null ? user.getProvince().getCode() : null)
                 .provinceName(user.getProvince() != null ? user.getProvince().getName() : null)
                 .fullAddress(user.getFullAddress())
+                .bankCode(user.getBankCode())
+                .bankAccountNumber(user.getBankAccountNumber())
+                .bankAccountName(user.getBankAccountName())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .roles(roleNames)

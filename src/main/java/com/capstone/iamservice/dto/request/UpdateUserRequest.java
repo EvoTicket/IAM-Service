@@ -40,4 +40,5 @@ public class UpdateUserRequest {
 
     @Schema(description = "Mã tỉnh/thành phố", example = "01")
     private Integer provinceCode;
+
 }

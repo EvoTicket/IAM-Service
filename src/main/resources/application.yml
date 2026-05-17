@@ -18,6 +18,7 @@ spring:
       service-name: iam-service
       allowed-services:
         - inventory-service
+        - order-service
   data:
     redis:
       url: ${REDIS_URL}

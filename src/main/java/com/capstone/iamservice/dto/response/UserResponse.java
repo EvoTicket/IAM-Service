@@ -28,6 +28,9 @@ public class UserResponse {
     private String provinceName;
     private String fullName;
     private String fullAddress;
+    private String bankCode;
+    private String bankAccountNumber;
+    private String bankAccountName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Set<String> roles;

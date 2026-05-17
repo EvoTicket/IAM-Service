@@ -61,6 +61,15 @@ public class User implements UserDetails {
     @Column(nullable = true)
     String userAddress;
 
+    @Column(name = "bank_code", nullable = true)
+    private String bankCode;
+
+    @Column(name = "bank_account_number", nullable = true)
+    private String bankAccountNumber;
+
+    @Column(name = "bank_account_name", nullable = true)
+    private String bankAccountName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ward_code", referencedColumnName = "code")
     private Ward ward;
