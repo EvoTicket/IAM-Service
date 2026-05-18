@@ -79,6 +79,15 @@ public class UserController {
         return ResponseEntity.ok(BaseResponse.ok("Cập nhật thông tin ngân hàng thành công", user));
     }
 
+    @DeleteMapping("/me/bank")
+    @Operation(summary = "Xóa thông tin ngân hàng của người dùng")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<BaseResponse<UserResponse>> deleteBank() {
+        Long userId = jwtUtil.getDataFromAuth().userId();
+        UserResponse user = userService.deleteUserBank(userId);
+        return ResponseEntity.ok(BaseResponse.ok("Xóa thông tin ngân hàng thành công", user));
+    }
+
     @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Upload avatar")
     @PreAuthorize("isAuthenticated()")

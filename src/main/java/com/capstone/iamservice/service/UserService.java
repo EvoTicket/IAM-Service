@@ -125,6 +125,18 @@ public class UserService {
         return mapToUserResponse(user);
     }
 
+    @Transactional
+    public UserResponse deleteUserBank(Long userId) {
+        User user = userUtil.getUserOrThrow(userId);
+
+        user.setBankCode(null);
+        user.setBankAccountNumber(null);
+        user.setBankAccountName(null);
+
+        userRepository.save(user);
+        return mapToUserResponse(user);
+    }
+
     private UserResponse mapToUserResponse(User user) {
         Set<String> roleNames = user.getRoles().stream()
                 .map(Role::getName)
