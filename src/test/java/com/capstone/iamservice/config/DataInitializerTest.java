@@ -1,11 +1,9 @@
 package com.capstone.iamservice.config;
 
-import com.capstone.iamservice.entity.Role;
 import com.capstone.iamservice.entity.Province;
 import com.capstone.iamservice.entity.User;
 import com.capstone.iamservice.entity.Ward;
 import com.capstone.iamservice.repository.ProvinceRepository;
-import com.capstone.iamservice.repository.RoleRepository;
 import com.capstone.iamservice.repository.UserRepository;
 import com.capstone.iamservice.repository.WardRepository;
 import org.junit.jupiter.api.Test;

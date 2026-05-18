@@ -2,6 +2,7 @@ package com.capstone.iamservice.entity;
 
 import com.capstone.iamservice.enums.AuthProvider;
 import com.capstone.iamservice.enums.Gender;
+import com.capstone.iamservice.enums.RoleEnum;
 import com.capstone.iamservice.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -108,13 +109,14 @@ public class User implements UserDetails {
     @JsonIgnore
     private OrganizationProfile organizationProfile;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
             name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
+            joinColumns = @JoinColumn(name = "user_id")
     )
-    private Set<Role> roles;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role_name")
+    private Set<RoleEnum> roles;
 
     @PrePersist
     protected void onCreate() {
@@ -130,7 +132,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                 .toList();
     }
 

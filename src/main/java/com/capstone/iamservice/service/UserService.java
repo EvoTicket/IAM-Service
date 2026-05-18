@@ -1,8 +1,8 @@
 package com.capstone.iamservice.service;
 
 import com.capstone.iamservice.dto.response.UserResponse;
-import com.capstone.iamservice.entity.Role;
 import com.capstone.iamservice.entity.User;
+import com.capstone.iamservice.enums.RoleEnum;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
 
@@ -139,7 +139,7 @@ public class UserService {
 
     private UserResponse mapToUserResponse(User user) {
         Set<String> roleNames = user.getRoles().stream()
-                .map(Role::getName)
+                .map(Enum::name)
                 .collect(Collectors.toSet());
 
         return UserResponse.builder()

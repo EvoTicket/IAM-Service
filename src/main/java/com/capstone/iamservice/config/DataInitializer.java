@@ -1,15 +1,14 @@
 package com.capstone.iamservice.config;
 
-import com.capstone.iamservice.entity.Role;
 import com.capstone.iamservice.entity.User;
 import com.capstone.iamservice.entity.Province;
 import com.capstone.iamservice.entity.Ward;
 import com.capstone.iamservice.enums.Gender;
+import com.capstone.iamservice.enums.RoleEnum;
 import com.capstone.iamservice.enums.UserStatus;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
 import com.capstone.iamservice.repository.ProvinceRepository;
-import com.capstone.iamservice.repository.RoleRepository;
 import com.capstone.iamservice.repository.UserRepository;
 import com.capstone.iamservice.repository.WardRepository;
 import jakarta.transaction.Transactional;
@@ -40,7 +39,6 @@ public class DataInitializer implements CommandLineRunner {
     private static final int LOCAL_SEED_PROVINCE_CODE = 1;
     private static final int LOCAL_SEED_WARD_CODE = 4;
 
-    private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final ProvinceRepository provinceRepository;
     private final WardRepository wardRepository;
@@ -61,31 +59,8 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        initRoles();
         initLocationDataIfMissing();
         initUsers();
-    }
-
-    private void initRoles() {
-        createRoleIfMissing(ROLE_ADMIN, "Administrator role with full access");
-        createRoleIfMissing(ROLE_USER, "Standard authenticated user role");
-        createRoleIfMissing(ROLE_BUYER, "Buyer role for ticket ownership and Dynamic QR access");
-        createRoleIfMissing(ROLE_CHECKER, "Checker role for gate scanning and admission control");
-        createRoleIfMissing(ROLE_ORGANIZER, "Organizer role for event operations and checker device approval");
-    }
-
-    private void createRoleIfMissing(String name, String description) {
-        if (roleRepository.findByName(name).isPresent()) {
-            return;
-        }
-
-        Role role = Role.builder()
-                .name(name)
-                .description(description)
-                .build();
-
-        roleRepository.save(role);
-        log.info("Created {} role", name);
     }
 
     private void initLocationDataIfMissing() {
@@ -120,12 +95,6 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void initUsers() {
-        Role adminRole = getRoleOrThrow(ROLE_ADMIN);
-        Role userRole = getRoleOrThrow(ROLE_USER);
-        Role buyerRole = getRoleOrThrow(ROLE_BUYER);
-        Role checkerRole = getRoleOrThrow(ROLE_CHECKER);
-        Role organizerRole = getRoleOrThrow(ROLE_ORGANIZER);
-
         createOrUpdateUser(
                 adminEmail,
                 adminPassword,
@@ -133,7 +102,7 @@ public class DataInitializer implements CommandLineRunner {
                 "User",
                 "0123456789",
                 Gender.MALE,
-                Set.of(adminRole, userRole)
+                Set.of(RoleEnum.ADMIN, RoleEnum.USER)
         );
 
         createOrUpdateUser(
@@ -143,7 +112,7 @@ public class DataInitializer implements CommandLineRunner {
                 "User",
                 "0900000201",
                 Gender.FEMALE,
-                Set.of(userRole, buyerRole)
+                Set.of(RoleEnum.USER, RoleEnum.BUYER)
         );
 
         createOrUpdateUser(
@@ -153,7 +122,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Gate",
                 "0900000301",
                 Gender.MALE,
-                Set.of(userRole, checkerRole)
+                Set.of(RoleEnum.USER, RoleEnum.CHECKER)
         );
 
         createOrUpdateUser(
@@ -163,13 +132,8 @@ public class DataInitializer implements CommandLineRunner {
                 "User",
                 "0900000401",
                 Gender.MALE,
-                Set.of(userRole, organizerRole)
+                Set.of(RoleEnum.USER, RoleEnum.ORGANIZER)
         );
-    }
-
-    private Role getRoleOrThrow(String roleName) {
-        return roleRepository.findByName(roleName)
-                .orElseThrow(() -> new RuntimeException(roleName + " role not found"));
     }
 
     private void createOrUpdateUser(
@@ -179,7 +143,7 @@ public class DataInitializer implements CommandLineRunner {
             String lastName,
             String phoneNumber,
             Gender gender,
-            Set<Role> roles
+            Set<RoleEnum> roles
     ) {
         var existingUser = userRepository.findByEmail(email);
         if (existingUser.isPresent()) {
