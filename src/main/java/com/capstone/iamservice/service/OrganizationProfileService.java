@@ -13,7 +13,6 @@ import com.capstone.iamservice.enums.RoleEnum;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
 import com.capstone.iamservice.entity.BankInfo;
-import com.capstone.iamservice.repository.BankInfoRepository;
 import com.capstone.iamservice.repository.OrganizationProfileRepository;
 import com.capstone.iamservice.repository.UserRepository;
 import com.capstone.iamservice.security.JwtService;
@@ -51,7 +50,6 @@ public class OrganizationProfileService {
     private final Cloudinary cloudinary;
     private final OrganizationUtil organizationUtil;
     private final LocationUtil locationUtil;
-    private final BankInfoRepository bankInfoRepository;
 
     @Value("${app.default.orgAvatarUrl}")
     String orgAvatarUrl;
