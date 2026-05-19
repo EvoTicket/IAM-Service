@@ -45,10 +45,12 @@ class OrganizationProfileControllerTest {
     @Test
     void createOrganization_ShouldReturn201() {
         CreateOrganizationRequest request = mock(CreateOrganizationRequest.class);
+        MultipartFile logoFile = mock(MultipartFile.class);
+        MultipartFile licenseFile = mock(MultipartFile.class);
         OrganizationCreationResponse response = mock(OrganizationCreationResponse.class);
-        when(organizationService.createOrganization(request)).thenReturn(response);
+        when(organizationService.createOrganization(request, logoFile, licenseFile)).thenReturn(response);
 
-        ResponseEntity<BaseResponse<OrganizationCreationResponse>> result = controller.createOrganization(request);
+        ResponseEntity<BaseResponse<OrganizationCreationResponse>> result = controller.createOrganization(request, logoFile, licenseFile);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -100,9 +102,9 @@ class OrganizationProfileControllerTest {
         TokenMetaData metadata = new TokenMetaData(1L, true, 2L);
         when(jwtUtil.getDataFromAuth()).thenReturn(metadata);
         OrganizationProfileResponse response = mock(OrganizationProfileResponse.class);
-        when(organizationService.updateOrganization(1L, request)).thenReturn(response);
+        when(organizationService.updateOrganization(2L, request)).thenReturn(response);
 
-        ResponseEntity<BaseResponse<OrganizationProfileResponse>> result = controller.updateOrganization(1L, request);
+        ResponseEntity<BaseResponse<OrganizationProfileResponse>> result = controller.updateOrganization(request);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals("Update profile thành công", result.getBody().getMessage());
@@ -115,7 +117,7 @@ class OrganizationProfileControllerTest {
         TokenMetaData metadata = new TokenMetaData(1L, false, null);
         when(jwtUtil.getDataFromAuth()).thenReturn(metadata);
 
-        assertThrows(AppException.class, () -> controller.updateOrganization(1L, request));
+        assertThrows(AppException.class, () -> controller.updateOrganization(request));
     }
 
     @Test

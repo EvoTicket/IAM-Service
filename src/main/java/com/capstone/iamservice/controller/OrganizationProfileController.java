@@ -17,6 +17,7 @@ import com.capstone.iamservice.security.TokenMetaData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -41,12 +42,32 @@ public class OrganizationProfileController {
     private final OrganizationProfileService organizationService;
     private final JwtUtil jwtUtil;
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BaseResponse<OrganizationCreationResponse>> createOrganization(
-            @Valid @RequestBody CreateOrganizationRequest request) {
+            @Valid
+            @RequestPart("organization")
+            @Parameter(
+                    description = "Organization JSON",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = CreateOrganizationRequest.class)
+                    )
+            )
+            CreateOrganizationRequest request,
 
-        OrganizationCreationResponse response = organizationService.createOrganization(request);
+            @RequestPart(value = "logoFile", required = false)
+            @Parameter(description = "Logo image", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                    schema = @Schema(type = "string", format = "binary")))
+            MultipartFile logoFile,
+
+            @RequestPart(value = "licenseFile", required = false)
+            @Parameter(description = "License document/image", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                    schema = @Schema(type = "string", format = "binary")))
+            MultipartFile licenseFile
+    ) {
+
+        OrganizationCreationResponse response = organizationService.createOrganization(request, logoFile, licenseFile);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponse.created("tạo org profile thành công", response));

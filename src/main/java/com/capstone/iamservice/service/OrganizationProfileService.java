@@ -32,10 +32,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -50,12 +52,13 @@ public class OrganizationProfileService {
     private final Cloudinary cloudinary;
     private final OrganizationUtil organizationUtil;
     private final LocationUtil locationUtil;
+    private final UploadService uploadService;
 
     @Value("${app.default.orgAvatarUrl}")
     String orgAvatarUrl;
 
     @Transactional
-    public OrganizationCreationResponse createOrganization(CreateOrganizationRequest request) {
+    public OrganizationCreationResponse createOrganization(CreateOrganizationRequest request, MultipartFile logoFile, MultipartFile licenseFile) {
         Long userId = jwtUtil.getDataFromAuth().userId();
         User user = userUtil.getUserOrThrow(userId);
 
@@ -110,6 +113,27 @@ public class OrganizationProfileService {
         organization.setBankInfos(bankInfoList);
 
         organization = organizationRepository.saveAndFlush(organization);
+
+        List<CompletableFuture<Void>> uploadTasks = new ArrayList<>();
+        if (logoFile != null && !logoFile.isEmpty()) {
+            try {
+                uploadTasks.add(uploadService.uploadImageAsync(organization, logoFile.getBytes(), "logo"));
+            } catch (IOException e) {
+                throw new AppException(ErrorCode.IO_EXCEPTION, "Không thể đọc tệp logo: " + e.getMessage());
+            }
+        }
+        if (licenseFile != null && !licenseFile.isEmpty()) {
+            try {
+                uploadTasks.add(uploadService.uploadImageAsync(organization, licenseFile.getBytes(), "license"));
+            } catch (IOException e) {
+                throw new AppException(ErrorCode.IO_EXCEPTION, "Không thể đọc tệp license: " + e.getMessage());
+            }
+        }
+
+        if (!uploadTasks.isEmpty()) {
+            CompletableFuture.allOf(uploadTasks.toArray(new CompletableFuture[0])).join();
+            organization = organizationRepository.save(organization);
+        }
 
         user.getRoles().add(RoleEnum.ORGANIZER);
         user.setOrganizationProfile(organization);
