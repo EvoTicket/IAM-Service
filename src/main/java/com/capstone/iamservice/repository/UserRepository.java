@@ -36,4 +36,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @org.springframework.data.repository.query.Param("since") java.time.LocalDateTime since,
             org.springframework.data.domain.Pageable pageable
     );
+
+    @org.springframework.data.jpa.repository.Query("""
+    SELECT u FROM User u
+    JOIN u.roles r
+    WHERE r.name = 'CHECKER'
+    """)
+    org.springframework.data.domain.Page<User> findAllCheckers(org.springframework.data.domain.Pageable pageable);
 }

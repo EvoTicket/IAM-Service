@@ -7,6 +7,7 @@ import com.capstone.iamservice.dto.response.OrganizationCreationResponse;
 import com.capstone.iamservice.dto.response.OrganizationProfileResponse;
 import com.capstone.iamservice.dto.request.UpdateOrganizationRequest;
 import com.capstone.iamservice.dto.request.VerifyOrganizationRequest;
+import com.capstone.iamservice.dto.request.AddBankInfoRequest;
 import com.capstone.iamservice.enums.OrganizationStatus;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
@@ -29,6 +30,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/organizations")
@@ -71,18 +74,18 @@ public class OrganizationProfileController {
         return ResponseEntity.ok(BaseResponse.ok("Lấy profile thành công", response));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/me/update")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BaseResponse<OrganizationProfileResponse>> updateOrganization(
-            @PathVariable Long id,
             @Valid @RequestBody UpdateOrganizationRequest request) {
 
         TokenMetaData tokenMetaData = jwtUtil.getDataFromAuth();
-        if(!tokenMetaData.isOrganization()){
+        Long organizerId = tokenMetaData.organizationId();
+        if(!tokenMetaData.isOrganization() || organizerId == null || organizerId <= 0) {
             throw new AppException(ErrorCode.FORBIDDEN, "Bạn chưa có hồ sơ doanh nghiệp");
         }
 
-        OrganizationProfileResponse response = organizationService.updateOrganization(id, request);
+        OrganizationProfileResponse response = organizationService.updateOrganization(tokenMetaData.organizationId(), request);
         return ResponseEntity.ok(BaseResponse.ok("Update profile thành công", response));
     }
 
@@ -97,7 +100,8 @@ public class OrganizationProfileController {
             @RequestPart("file") MultipartFile file
     ) {
         TokenMetaData tokenMetaData = jwtUtil.getDataFromAuth();
-        if(!tokenMetaData.isOrganization()){
+        Long organizerId = tokenMetaData.organizationId();
+        if(!tokenMetaData.isOrganization() || organizerId == null || organizerId <= 0) {
             throw new AppException(ErrorCode.FORBIDDEN, "Bạn chưa có hồ sơ doanh nghiệp");
         }
 
@@ -112,6 +116,49 @@ public class OrganizationProfileController {
     public ResponseEntity<BaseResponse<Void>> deleteOrganization(@PathVariable Long id) {
         organizationService.deleteOrganization(id);
         return ResponseEntity.ok(BaseResponse.noContent("Xóa profile thành công"));
+    }
+
+    @PostMapping("/bank-info")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<BaseResponse<OrganizationProfileResponse>> addBankInfo(
+            @Valid @RequestBody AddBankInfoRequest request) {
+
+        TokenMetaData tokenMetaData = jwtUtil.getDataFromAuth();
+        Long organizerId = tokenMetaData.organizationId();
+        if(!tokenMetaData.isOrganization() || organizerId == null || organizerId <= 0) {
+            throw new AppException(ErrorCode.FORBIDDEN, "Bạn không có quyền thao tác trên hồ sơ này");
+        }
+
+        OrganizationProfileResponse response = organizationService.addBankInfo(organizerId, request);
+        return ResponseEntity.ok(BaseResponse.ok("Thêm tài khoản ngân hàng thành công", response));
+    }
+
+    @DeleteMapping("/bank-info/{bankInfoId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<BaseResponse<OrganizationProfileResponse>> deleteBankInfo(
+            @PathVariable Long bankInfoId) {
+
+        TokenMetaData tokenMetaData = jwtUtil.getDataFromAuth();
+        Long organizerId = tokenMetaData.organizationId();
+        if(!tokenMetaData.isOrganization() || organizerId == null || organizerId <= 0) {
+            throw new AppException(ErrorCode.FORBIDDEN, "Bạn không có quyền thao tác trên hồ sơ này");
+        }
+
+        OrganizationProfileResponse response = organizationService.deleteBankInfo(organizerId, bankInfoId);
+        return ResponseEntity.ok(BaseResponse.ok("Xóa tài khoản ngân hàng thành công", response));
+    }
+
+    @GetMapping("/bank-info")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<BaseResponse<List<OrganizationProfileResponse.BankInfoResponse>>> getBankInfos() {
+        TokenMetaData tokenMetaData = jwtUtil.getDataFromAuth();
+        Long organizerId = tokenMetaData.organizationId();
+        if(!tokenMetaData.isOrganization() || organizerId == null || organizerId <= 0) {
+            throw new AppException(ErrorCode.FORBIDDEN, "Bạn không có quyền thao tác trên hồ sơ này");
+        }
+
+        List<OrganizationProfileResponse.BankInfoResponse> response = organizationService.getBankInfos(organizerId);
+        return ResponseEntity.ok(BaseResponse.ok("Xóa tài khoản ngân hàng thành công", response));
     }
 
 

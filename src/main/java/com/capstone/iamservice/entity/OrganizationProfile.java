@@ -8,6 +8,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 
 @Entity
 @Table(name = "organization_profiles")
@@ -91,6 +92,10 @@ public class OrganizationProfile {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now(ZoneOffset.ofHours(7));
     }
+
+    @OneToMany(mappedBy = "organizationProfile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<BankInfo> bankInfos = new java.util.ArrayList<>();
 
     public String getFullAddress() {
         if (ward != null && province != null) {

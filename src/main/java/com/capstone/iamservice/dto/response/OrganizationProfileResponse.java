@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -32,4 +33,18 @@ public class OrganizationProfileResponse {
     private LocalDateTime verifiedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<BankInfoResponse> bankInfos;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BankInfoResponse {
+        private Long id;
+        private String profileName;
+        private String bankCode;
+        private String bankName;
+        private String bankAccountNumber;
+        private String bankOwnerName;
+    }
 }

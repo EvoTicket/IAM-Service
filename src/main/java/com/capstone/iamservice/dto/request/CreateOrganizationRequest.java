@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Data
 @Builder
@@ -41,4 +42,28 @@ public class CreateOrganizationRequest {
     private String website;
 
     private String businessLicenseUrl;
+
+    @NotEmpty(message = "At least one bank account is required")
+    private List<BankInfoRequest> bankInfos;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BankInfoRequest {
+        @NotBlank(message = "Profile name is required")
+        private String profileName;
+
+        @NotBlank(message = "Bank code is required")
+        private String bankCode;
+
+        @NotBlank(message = "Bank name is required")
+        private String bankName;
+
+        @NotBlank(message = "Bank account number is required")
+        private String bankAccountNumber;
+
+        @NotBlank(message = "Bank owner name is required")
+        private String bankOwnerName;
+    }
 }

@@ -42,18 +42,33 @@ public class UserManagementController {
             @RequestParam(required = false) OrganizationStatus verification,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Integer days,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "desc") String direction
     ) {
         Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
 
         Page<AccountDetailsResponse> result = userManagementService.searchAccounts(
                 role, status, verification, keyword, days, pageable
         );
 
+        return ResponseEntity.ok(BasePageResponse.ok(result));
+    }
+
+    @GetMapping("/checkers")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BasePageResponse<AccountDetailsResponse>> getCheckers(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction
+    ) {
+        Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+
+        Page<AccountDetailsResponse> result = userManagementService.getCheckers(pageable);
         return ResponseEntity.ok(BasePageResponse.ok(result));
     }
 }

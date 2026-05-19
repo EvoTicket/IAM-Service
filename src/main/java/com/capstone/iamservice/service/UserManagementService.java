@@ -68,4 +68,9 @@ public class UserManagementService {
                 .lastActive(user.getUpdatedAt()) // Tạm thời dùng updatedAt
                 .build();
     }
+
+    public Page<AccountDetailsResponse> getCheckers(Pageable pageable) {
+        return userRepository.findAllCheckers(pageable)
+                .map(this::mapToAccountDetails);
+    }
 }

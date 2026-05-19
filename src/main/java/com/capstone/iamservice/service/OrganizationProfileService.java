@@ -12,6 +12,8 @@ import com.capstone.iamservice.entity.Ward;
 import com.capstone.iamservice.enums.OrganizationStatus;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
+import com.capstone.iamservice.entity.BankInfo;
+import com.capstone.iamservice.repository.BankInfoRepository;
 import com.capstone.iamservice.repository.OrganizationProfileRepository;
 import com.capstone.iamservice.repository.RoleRepository;
 import com.capstone.iamservice.repository.UserRepository;
@@ -33,6 +35,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -50,6 +53,7 @@ public class OrganizationProfileService {
     private final OrganizationUtil organizationUtil;
     private final LocationUtil locationUtil;
     private final RoleRepository roleRepository;
+    private final BankInfoRepository bankInfoRepository;
 
     @Value("${app.default.orgAvatarUrl}")
     String orgAvatarUrl;
@@ -94,6 +98,20 @@ public class OrganizationProfileService {
                 .businessLicenseUrl(request.getBusinessLicenseUrl())
                 .status(OrganizationStatus.PENDING)
                 .build();
+
+        final OrganizationProfile finalOrg = organization;
+        java.util.List<BankInfo> bankInfoList = request.getBankInfos().stream()
+                .map(bi -> BankInfo.builder()
+                        .profileName(bi.getProfileName())
+                        .organizationProfile(finalOrg)
+                        .bankCode(bi.getBankCode())
+                        .bankName(bi.getBankName())
+                        .bankAccountNumber(bi.getBankAccountNumber())
+                        .bankOwnerName(bi.getBankOwnerName())
+                        .build())
+                .toList();
+
+        organization.setBankInfos(bankInfoList);
 
         organization = organizationRepository.saveAndFlush(organization);
 
@@ -233,12 +251,25 @@ public class OrganizationProfileService {
         return organizationRepository.advancedSearch(status, provinceCode, keyword, pageable)
                 .map(this::mapToResponse);
     }
-
     private OrganizationProfileResponse mapToResponse(OrganizationProfile org) {
         AddressInfo addressInfo = null;
 
         if (org.getWard() != null || org.getProvince() != null) {
             addressInfo = locationUtil.getAddressInfo(org.getProvince(), org.getWard(), org.getFullAddress());
+        }
+
+        java.util.List<OrganizationProfileResponse.BankInfoResponse> bankInfoResponses = java.util.Collections.emptyList();
+        if (org.getBankInfos() != null) {
+            bankInfoResponses = org.getBankInfos().stream()
+                    .map(bi -> OrganizationProfileResponse.BankInfoResponse.builder()
+                            .id(bi.getId())
+                            .profileName(bi.getProfileName())
+                            .bankCode(bi.getBankCode())
+                            .bankName(bi.getBankName())
+                            .bankAccountNumber(bi.getBankAccountNumber())
+                            .bankOwnerName(bi.getBankOwnerName())
+                            .build())
+                    .toList();
         }
 
         return OrganizationProfileResponse.builder()
@@ -261,6 +292,60 @@ public class OrganizationProfileService {
                 .verifiedAt(org.getVerifiedAt())
                 .createdAt(org.getCreatedAt())
                 .updatedAt(org.getUpdatedAt())
+                .bankInfos(bankInfoResponses)
                 .build();
+    }
+
+    @Transactional
+    public OrganizationProfileResponse addBankInfo(Long orgId, AddBankInfoRequest request) {
+        OrganizationProfile org = organizationUtil.getOrgProfileOrElseThrow(orgId);
+
+        BankInfo bankInfo = BankInfo.builder()
+                .profileName(request.getProfileName())
+                .organizationProfile(org)
+                .bankCode(request.getBankCode())
+                .bankName(request.getBankName())
+                .bankAccountNumber(request.getBankAccountNumber())
+                .bankOwnerName(request.getBankOwnerName())
+                .build();
+
+        org.getBankInfos().add(bankInfo);
+        organizationRepository.save(org);
+
+        return mapToResponse(org);
+    }
+
+    @Transactional
+    public OrganizationProfileResponse deleteBankInfo(Long orgId, Long bankInfoId) {
+        OrganizationProfile org = organizationUtil.getOrgProfileOrElseThrow(orgId);
+
+        long bankCount = org.getBankInfos().size();
+        if (bankCount <= 1) {
+            throw new AppException(ErrorCode.BAD_REQUEST, "Không thể xóa tài khoản ngân hàng cuối cùng. Yêu cầu tối thiểu 1 tài khoản.");
+        }
+
+        boolean removed = org.getBankInfos().removeIf(bi -> bi.getId().equals(bankInfoId));
+        if (!removed) {
+            throw new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Không tìm thấy tài khoản ngân hàng cần xóa.");
+        }
+
+        organizationRepository.save(org);
+        return mapToResponse(org);
+    }
+
+    @Transactional
+    public List<OrganizationProfileResponse.BankInfoResponse> getBankInfos(Long orgId) {
+        OrganizationProfile org = organizationUtil.getOrgProfileOrElseThrow(orgId);
+
+        return org.getBankInfos().stream()
+                .map(bi -> OrganizationProfileResponse.BankInfoResponse.builder()
+                        .id(bi.getId())
+                        .profileName(bi.getProfileName())
+                        .bankCode(bi.getBankCode())
+                        .bankName(bi.getBankName())
+                        .bankAccountNumber(bi.getBankAccountNumber())
+                        .bankOwnerName(bi.getBankOwnerName())
+                        .build())
+                .toList();
     }
 }
