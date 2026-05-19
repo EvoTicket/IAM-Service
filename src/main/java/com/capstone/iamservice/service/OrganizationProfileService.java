@@ -99,7 +99,7 @@ public class OrganizationProfileService {
                 .build();
 
         final OrganizationProfile finalOrg = organization;
-        java.util.List<BankInfo> bankInfoList = request.getBankInfos().stream()
+        List<BankInfo> bankInfoList = new ArrayList<>(request.getBankInfos().stream()
                 .map(bi -> BankInfo.builder()
                         .profileName(bi.getProfileName())
                         .organizationProfile(finalOrg)
@@ -108,7 +108,7 @@ public class OrganizationProfileService {
                         .bankAccountNumber(bi.getBankAccountNumber())
                         .bankOwnerName(bi.getBankOwnerName())
                         .build())
-                .toList();
+                .toList());
 
         organization.setBankInfos(bankInfoList);
 
