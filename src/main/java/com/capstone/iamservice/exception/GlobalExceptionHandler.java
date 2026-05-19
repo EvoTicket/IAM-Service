@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(HttpServletRequest request) {
         ErrorCode errorCode = ErrorCode.BAD_CREDENTIALS;
-        log.error("AppException occurred: code={}, message={}, path={}", errorCode.getCode(), ex.getMessage(), request.getRequestURI(), ex);
+
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now(ZoneOffset.ofHours(7)))
                 .status(errorCode.getStatus().value())
