@@ -1,6 +1,7 @@
 package com.capstone.iamservice.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -20,6 +21,7 @@ import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -27,6 +29,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAppException(AppException ex, HttpServletRequest request) {
         ErrorCode errorCode = ex.getErrorCode();
 
+        log.error("AppException occurred: code={}, message={}, path={}", errorCode.getCode(), ex.getMessage(), request.getRequestURI(), ex);
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now(ZoneOffset.ofHours(7)))
                 .status(errorCode.getStatus().value())
@@ -42,7 +45,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(HttpServletRequest request) {
         ErrorCode errorCode = ErrorCode.BAD_CREDENTIALS;
-
+        log.error("AppException occurred: code={}, message={}, path={}", errorCode.getCode(), ex.getMessage(), request.getRequestURI(), ex);
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now(ZoneOffset.ofHours(7)))
                 .status(errorCode.getStatus().value())
@@ -85,7 +88,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
-
+        log.error("AppException occurred: code={}, message={}, path={}", errorCode.getCode(), ex.getMessage(), request.getRequestURI(), ex);
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now(ZoneOffset.ofHours(7)))
                 .status(errorCode.getStatus().value())
@@ -101,7 +104,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IOException.class)
     public ResponseEntity<ErrorResponse> handleIOException(IOException ex, HttpServletRequest request) {
         ErrorCode errorCode = ErrorCode.IO_EXCEPTION;
-
+        log.error("AppException occurred: code={}, message={}, path={}", errorCode.getCode(), ex.getMessage(), request.getRequestURI(), ex);
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now(ZoneOffset.ofHours(7)))
                 .status(errorCode.getStatus().value())
