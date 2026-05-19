@@ -2,13 +2,12 @@ package com.capstone.iamservice.service;
 
 import com.capstone.iamservice.dto.response.AuthenticationResponse;
 import com.capstone.iamservice.dto.response.GoogleUserInfo;
-import com.capstone.iamservice.entity.Role;
 import com.capstone.iamservice.entity.User;
 import com.capstone.iamservice.enums.AuthProvider;
+import com.capstone.iamservice.enums.RoleEnum;
 import com.capstone.iamservice.enums.UserStatus;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
-import com.capstone.iamservice.repository.RoleRepository;
 import com.capstone.iamservice.repository.UserRepository;
 import com.capstone.iamservice.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,6 @@ import java.util.Set;
 public class GoogleAuthService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final JwtService jwtService;
     private final WebClient webClient;
     private final RefreshTokenService refreshTokenService;
@@ -110,9 +108,6 @@ public class GoogleAuthService {
     }
 
     private User createGoogleUser(GoogleUserInfo info) {
-        Role userRole = roleRepository.findByName("USER")
-                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Không tìm thấy role USER"));
-
         String firstName = info.getGivenName() != null ? info.getGivenName() : "";
         String lastName  = info.getFamilyName() != null ? info.getFamilyName() : info.getName();
         String avatar    = info.getPicture() != null ? info.getPicture() : defaultAvatarUrl;
@@ -125,7 +120,7 @@ public class GoogleAuthService {
                 .avatarUrl(avatar)
                 .authProvider(AuthProvider.GOOGLE)
                 .status(UserStatus.ACTIVE)
-                .roles(Set.of(userRole))
+                .roles(Set.of(RoleEnum.USER))
                 .phoneNumber("")
                 .userAddress("")
                 .build();

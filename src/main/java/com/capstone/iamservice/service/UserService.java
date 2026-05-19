@@ -1,8 +1,8 @@
 package com.capstone.iamservice.service;
 
 import com.capstone.iamservice.dto.response.UserResponse;
-import com.capstone.iamservice.entity.Role;
 import com.capstone.iamservice.entity.User;
+import com.capstone.iamservice.enums.RoleEnum;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
 
@@ -125,9 +125,21 @@ public class UserService {
         return mapToUserResponse(user);
     }
 
+    @Transactional
+    public UserResponse deleteUserBank(Long userId) {
+        User user = userUtil.getUserOrThrow(userId);
+
+        user.setBankCode(null);
+        user.setBankAccountNumber(null);
+        user.setBankAccountName(null);
+
+        userRepository.save(user);
+        return mapToUserResponse(user);
+    }
+
     private UserResponse mapToUserResponse(User user) {
         Set<String> roleNames = user.getRoles().stream()
-                .map(Role::getName)
+                .map(Enum::name)
                 .collect(Collectors.toSet());
 
         return UserResponse.builder()

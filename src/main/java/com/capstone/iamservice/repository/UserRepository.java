@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     SELECT DISTINCT u FROM User u
     LEFT JOIN u.organizationProfile op
     JOIN u.roles r
-    WHERE (:roleName IS NULL OR r.name = :roleName)
+    WHERE (:roleName IS NULL OR str(r) = :roleName)
       AND (:userStatus IS NULL OR u.status = :userStatus)
       AND (:orgStatus IS NULL OR op.status = :orgStatus)
       AND (:keyword IS NULL OR (

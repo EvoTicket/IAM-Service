@@ -48,7 +48,7 @@ public class UserManagementService {
     private AccountDetailsResponse mapToAccountDetails(User user) {
         String role = user.getRoles().stream()
                 .findFirst()
-                .map(r -> r.getName())
+                .map(Enum::name)
                 .orElse("BUYER");
 
         String verificationStatus = "N/A";

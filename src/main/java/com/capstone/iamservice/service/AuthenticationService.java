@@ -4,13 +4,12 @@ import com.capstone.iamservice.dto.event.WelcomeEvent;
 import com.capstone.iamservice.dto.request.AuthenticationRequest;
 import com.capstone.iamservice.dto.response.AuthenticationResponse;
 import com.capstone.iamservice.dto.request.RegisterRequest;
-import com.capstone.iamservice.entity.Role;
 import com.capstone.iamservice.entity.User;
+import com.capstone.iamservice.enums.RoleEnum;
 import com.capstone.iamservice.enums.UserStatus;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
 import com.capstone.iamservice.security.JwtService;
-import com.capstone.iamservice.repository.RoleRepository;
 import com.capstone.iamservice.repository.UserRepository;
 import com.capstone.iamservice.producer.RedisStreamProducer;
 import com.capstone.iamservice.util.LocationUtil;
@@ -29,7 +28,6 @@ import java.util.Set;
 public class AuthenticationService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final LocationUtil locationUtil;
@@ -46,9 +44,6 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.CONFLICT, "Email đã tồn tại");
         }
 
-        Role userRole = roleRepository.findByName("USER")
-                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Không tìm thấy role USER"));
-
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -56,7 +51,7 @@ public class AuthenticationService {
                 .lastName(request.getLastName())
                 .phoneNumber(request.getPhoneNumber())
                 .dateOfBirth(request.getDateOfBirth())
-                .roles(Set.of(userRole))
+                .roles(Set.of(RoleEnum.USER))
                 .gender(request.getGender())
                 .status(UserStatus.ACTIVE)
                 .userAddress(request.getUserAddress())

@@ -1,7 +1,6 @@
 package com.capstone.iamservice.service;
 
 import com.capstone.iamservice.dto.response.UserResponse;
-import com.capstone.iamservice.entity.Role;
 import com.capstone.iamservice.entity.User;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.repository.UserRepository;

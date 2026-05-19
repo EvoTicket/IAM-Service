@@ -6,16 +6,15 @@ import com.capstone.iamservice.dto.response.OrganizationCreationResponse;
 import com.capstone.iamservice.dto.response.OrganizationProfileResponse;
 import com.capstone.iamservice.entity.OrganizationProfile;
 import com.capstone.iamservice.entity.Province;
-import com.capstone.iamservice.entity.Role;
 import com.capstone.iamservice.entity.User;
 import com.capstone.iamservice.entity.Ward;
 import com.capstone.iamservice.enums.OrganizationStatus;
+import com.capstone.iamservice.enums.RoleEnum;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
 import com.capstone.iamservice.entity.BankInfo;
 import com.capstone.iamservice.repository.BankInfoRepository;
 import com.capstone.iamservice.repository.OrganizationProfileRepository;
-import com.capstone.iamservice.repository.RoleRepository;
 import com.capstone.iamservice.repository.UserRepository;
 import com.capstone.iamservice.security.JwtService;
 import com.capstone.iamservice.security.JwtUtil;
@@ -52,7 +51,6 @@ public class OrganizationProfileService {
     private final Cloudinary cloudinary;
     private final OrganizationUtil organizationUtil;
     private final LocationUtil locationUtil;
-    private final RoleRepository roleRepository;
     private final BankInfoRepository bankInfoRepository;
 
     @Value("${app.default.orgAvatarUrl}")
@@ -115,13 +113,7 @@ public class OrganizationProfileService {
 
         organization = organizationRepository.saveAndFlush(organization);
 
-        Role organizerRole = roleRepository.findByName("ORGANIZER")
-                .orElseGet(() -> roleRepository.save(Role.builder()
-                        .name("ORGANIZER")
-                        .description("Organizer role")
-                        .build()));
-
-        user.getRoles().add(organizerRole);
+        user.getRoles().add(RoleEnum.ORGANIZER);
         user.setOrganizationProfile(organization);
         userRepository.save(user);
 
@@ -140,7 +132,8 @@ public class OrganizationProfileService {
 
     public OrganizationProfileResponse getOrganizationByUserId(Long userId) {
         OrganizationProfile organization = organizationRepository.findByUserId(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Organization profile not found for this user"));
+                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND,
+                        "Organization profile not found for this user"));
 
         return mapToResponse(organization);
     }
@@ -159,7 +152,7 @@ public class OrganizationProfileService {
 
         Map<String, Object> options = new HashMap<>();
         options.put("resource_type", "image");
-        options.put("folder",  folder);
+        options.put("folder", folder);
         options.put("public_id", publicId);
         options.put("overwrite", true);
 
@@ -223,7 +216,7 @@ public class OrganizationProfileService {
 
     @Transactional
     public OrganizationProfileResponse verifyOrganization(Long id, VerifyOrganizationRequest request) {
-        OrganizationProfile organization =organizationUtil.getOrgProfileOrElseThrow(id);
+        OrganizationProfile organization = organizationUtil.getOrgProfileOrElseThrow(id);
 
         if (request.getStatus() == OrganizationStatus.REJECTED &&
                 (request.getRejectionReason() == null || request.getRejectionReason().isBlank())) {
@@ -242,7 +235,6 @@ public class OrganizationProfileService {
         return mapToResponse(organization);
     }
 
-
     public Page<OrganizationProfileResponse> advancedSearch(
             OrganizationStatus status,
             Integer provinceCode,
@@ -251,6 +243,7 @@ public class OrganizationProfileService {
         return organizationRepository.advancedSearch(status, provinceCode, keyword, pageable)
                 .map(this::mapToResponse);
     }
+
     private OrganizationProfileResponse mapToResponse(OrganizationProfile org) {
         AddressInfo addressInfo = null;
 
@@ -258,7 +251,8 @@ public class OrganizationProfileService {
             addressInfo = locationUtil.getAddressInfo(org.getProvince(), org.getWard(), org.getFullAddress());
         }
 
-        java.util.List<OrganizationProfileResponse.BankInfoResponse> bankInfoResponses = java.util.Collections.emptyList();
+        java.util.List<OrganizationProfileResponse.BankInfoResponse> bankInfoResponses = java.util.Collections
+                .emptyList();
         if (org.getBankInfos() != null) {
             bankInfoResponses = org.getBankInfos().stream()
                     .map(bi -> OrganizationProfileResponse.BankInfoResponse.builder()
@@ -321,7 +315,8 @@ public class OrganizationProfileService {
 
         long bankCount = org.getBankInfos().size();
         if (bankCount <= 1) {
-            throw new AppException(ErrorCode.BAD_REQUEST, "Không thể xóa tài khoản ngân hàng cuối cùng. Yêu cầu tối thiểu 1 tài khoản.");
+            throw new AppException(ErrorCode.BAD_REQUEST,
+                    "Không thể xóa tài khoản ngân hàng cuối cùng. Yêu cầu tối thiểu 1 tài khoản.");
         }
 
         boolean removed = org.getBankInfos().removeIf(bi -> bi.getId().equals(bankInfoId));
