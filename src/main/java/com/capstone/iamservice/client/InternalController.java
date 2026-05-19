@@ -2,8 +2,12 @@ package com.capstone.iamservice.client;
 
 import com.capstone.iamservice.dto.BaseResponse;
 import com.capstone.iamservice.dto.response.AddressInfo;
+import com.capstone.iamservice.entity.BankInfo;
 import com.capstone.iamservice.entity.OrganizationProfile;
 import com.capstone.iamservice.entity.User;
+import com.capstone.iamservice.exception.AppException;
+import com.capstone.iamservice.exception.ErrorCode;
+import com.capstone.iamservice.repository.BankInfoRepository;
 import com.capstone.iamservice.util.LocationUtil;
 import com.capstone.iamservice.util.OrganizationUtil;
 import com.capstone.iamservice.util.UserUtil;
@@ -22,6 +26,7 @@ public class InternalController {
     private final OrganizationUtil organizationUtil;
     private final LocationUtil locationUtil;
     private final UserUtil userUtil;
+    private final BankInfoRepository bankInfoRepository;
 
     @GetMapping("/organizations/{id}")
     public ResponseEntity<OrgInternalResponse> getOrganizationById(@PathVariable Long id) {
@@ -71,5 +76,22 @@ public class InternalController {
                 .build();
 
         return ResponseEntity.ok(BaseResponse.ok("lấy thông tin ngân hàng thành công", response));
+    }
+
+    @GetMapping("/bank-infos/{id}")
+    public ResponseEntity<BankInfoInternalResponse> getBankInfoById(@PathVariable Long id) {
+        BankInfo bankInfo = bankInfoRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Bank info not found with id: " + id));
+
+        BankInfoInternalResponse response = BankInfoInternalResponse.builder()
+                .id(bankInfo.getId())
+                .profileName(bankInfo.getProfileName())
+                .bankCode(bankInfo.getBankCode())
+                .bankName(bankInfo.getBankName())
+                .bankAccountNumber(bankInfo.getBankAccountNumber())
+                .bankOwnerName(bankInfo.getBankOwnerName())
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 }
