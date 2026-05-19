@@ -4,6 +4,7 @@ import com.capstone.iamservice.dto.response.AccountDetailsResponse;
 import com.capstone.iamservice.dto.response.AccountSummaryResponse;
 import com.capstone.iamservice.entity.User;
 import com.capstone.iamservice.enums.OrganizationStatus;
+import com.capstone.iamservice.enums.RoleEnum;
 import com.capstone.iamservice.enums.UserStatus;
 import com.capstone.iamservice.repository.OrganizationProfileRepository;
 import com.capstone.iamservice.repository.UserRepository;
@@ -70,7 +71,7 @@ public class UserManagementService {
     }
 
     public Page<AccountDetailsResponse> getCheckers(Pageable pageable) {
-        return userRepository.findAllCheckers(pageable)
+        return userRepository.findByRole(RoleEnum.CHECKER, pageable)
                 .map(this::mapToAccountDetails);
     }
 }

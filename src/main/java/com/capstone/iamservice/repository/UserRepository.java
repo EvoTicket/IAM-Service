@@ -1,7 +1,12 @@
 package com.capstone.iamservice.repository;
 
 import com.capstone.iamservice.entity.User;
+import com.capstone.iamservice.enums.RoleEnum;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -37,10 +42,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
             org.springframework.data.domain.Pageable pageable
     );
 
-    @org.springframework.data.jpa.repository.Query("""
-    SELECT u FROM User u
-    JOIN u.roles r
-    WHERE r.name = 'CHECKER'
+    @Query("""
+    SELECT u
+    FROM User u
+    WHERE :role MEMBER OF u.roles
     """)
-    org.springframework.data.domain.Page<User> findAllCheckers(org.springframework.data.domain.Pageable pageable);
+    Page<User> findByRole(@Param("role") RoleEnum role, Pageable pageable);
 }
