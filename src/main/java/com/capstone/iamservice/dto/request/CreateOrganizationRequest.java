@@ -43,6 +43,15 @@ public class CreateOrganizationRequest {
 
     private String businessLicenseUrl;
 
+    private String logoUrl;
+    private String coverUrl;
+    private String shortDescription;
+    private String publicBio;
+    private String businessType;
+    private String billingAddress;
+    private String organizationType;
+    private String verificationLevel;
+
     @NotEmpty(message = "At least one bank account is required")
     private List<BankInfoRequest> bankInfos;
 

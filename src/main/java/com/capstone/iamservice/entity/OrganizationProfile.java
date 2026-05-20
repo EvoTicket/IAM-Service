@@ -82,6 +82,24 @@ public class OrganizationProfile {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    private String coverUrl;
+
+    private String shortDescription;
+
+    @Column(columnDefinition = "TEXT")
+    private String publicBio;
+
+    private String businessType;
+
+    @Builder.Default
+    private boolean taxVerified = false;
+
+    private String billingAddress;
+
+    private String organizationType;
+
+    private String verificationLevel;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now(ZoneOffset.ofHours(7));

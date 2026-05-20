@@ -4,6 +4,7 @@ import com.capstone.iamservice.dto.response.AddressInfo;
 import com.capstone.iamservice.dto.request.*;
 import com.capstone.iamservice.dto.response.OrganizationCreationResponse;
 import com.capstone.iamservice.dto.response.OrganizationProfileResponse;
+import com.capstone.iamservice.dto.response.OrganizerAccountProfileResponse;
 import com.capstone.iamservice.entity.OrganizationProfile;
 import com.capstone.iamservice.entity.Province;
 import com.capstone.iamservice.entity.User;
@@ -86,7 +87,7 @@ public class OrganizationProfileService {
                 .organizationName(request.getOrganizationName())
                 .legalName(request.getLegalName())
                 .taxCode(request.getTaxCode())
-                .logoUrl(orgAvatarUrl)
+                .logoUrl(request.getLogoUrl() != null ? request.getLogoUrl() : orgAvatarUrl)
                 .description(request.getDescription())
                 .businessAddress(request.getBusinessAddress())
                 .ward(ward)
@@ -96,6 +97,14 @@ public class OrganizationProfileService {
                 .website(request.getWebsite())
                 .businessLicenseUrl(request.getBusinessLicenseUrl())
                 .status(OrganizationStatus.PENDING)
+                .coverUrl(request.getCoverUrl() != null ? request.getCoverUrl() : "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&q=80")
+                .shortDescription(request.getShortDescription() != null ? request.getShortDescription() : request.getDescription())
+                .publicBio(request.getPublicBio() != null ? request.getPublicBio() : request.getDescription())
+                .businessType(request.getBusinessType() != null ? request.getBusinessType() : "Công ty TNHH")
+                .taxVerified(false)
+                .billingAddress(request.getBillingAddress() != null ? request.getBillingAddress() : request.getBusinessAddress())
+                .organizationType(request.getOrganizationType() != null ? request.getOrganizationType() : "Doanh nghiệp tổ chức sự kiện")
+                .verificationLevel("BASIC_VERIFIED")
                 .build();
 
         final OrganizationProfile finalOrg = organization;
@@ -158,6 +167,59 @@ public class OrganizationProfileService {
                         "Organization profile not found for this user"));
 
         return mapToResponse(organization);
+    }
+
+    public OrganizerAccountProfileResponse getOrganizerAccountProfile(Long userId) {
+        OrganizationProfile org = organizationRepository.findByUserId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND,
+                        "Organization profile not found for this user"));
+
+        User user = org.getUser();
+
+        OrganizerAccountProfileResponse.AccountOwnerInfo ownerInfo = OrganizerAccountProfileResponse.AccountOwnerInfo.builder()
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .phone(user.getPhoneNumber())
+                .employeeCode("EVO-OP-0042")
+                .twoFactorEnabled(false)
+                .lastPasswordChangeAt(LocalDateTime.now().minusMonths(2))
+                .activeSessions(3)
+                .build();
+
+        List<OrganizerAccountProfileResponse.BankInfoResponse> payoutInfo = new ArrayList<>();
+        if (org.getBankInfos() != null) {
+            payoutInfo = org.getBankInfos().stream()
+                    .map(bi -> OrganizerAccountProfileResponse.BankInfoResponse.builder()
+                            .accountName(bi.getBankOwnerName())
+                            .bankName(bi.getBankName())
+                            .accountNumber(bi.getBankAccountNumber())
+                            .build())
+                    .toList();
+        }
+
+        return OrganizerAccountProfileResponse.builder()
+                .id(org.getId())
+                .userId(user.getId())
+                .organizationName(org.getOrganizationName())
+                .organizationType(org.getOrganizationType() != null ? org.getOrganizationType() : "Doanh nghiệp tổ chức sự kiện")
+                .status(org.getStatus() != null ? org.getStatus().name() : "PENDING")
+                .verificationLevel(org.getVerificationLevel() != null ? org.getVerificationLevel() : "BASIC_VERIFIED")
+                .joinedAt(org.getCreatedAt())
+                .primaryContactName(user.getFullName())
+                .logoUrl(org.getLogoUrl())
+                .coverUrl(org.getCoverUrl() != null ? org.getCoverUrl() : "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&q=80")
+                .website(org.getWebsite())
+                .supportEmail(org.getBusinessEmail())
+                .supportPhone(org.getBusinessPhone())
+                .shortDescription(org.getShortDescription() != null ? org.getShortDescription() : org.getDescription())
+                .publicBio(org.getPublicBio() != null ? org.getPublicBio() : org.getDescription())
+                .businessType(org.getBusinessType() != null ? org.getBusinessType() : "Công ty TNHH")
+                .taxCode(org.getTaxCode())
+                .taxVerified(org.isTaxVerified())
+                .billingAddress(org.getBillingAddress() != null ? org.getBillingAddress() : org.getFullAddress())
+                .ownerInfo(ownerInfo)
+                .payoutInfo(payoutInfo)
+                .build();
     }
 
     @Transactional

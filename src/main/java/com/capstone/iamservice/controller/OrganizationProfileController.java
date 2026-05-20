@@ -5,6 +5,7 @@ import com.capstone.iamservice.dto.BaseResponse;
 import com.capstone.iamservice.dto.request.CreateOrganizationRequest;
 import com.capstone.iamservice.dto.response.OrganizationCreationResponse;
 import com.capstone.iamservice.dto.response.OrganizationProfileResponse;
+import com.capstone.iamservice.dto.response.OrganizerAccountProfileResponse;
 import com.capstone.iamservice.dto.request.UpdateOrganizationRequest;
 import com.capstone.iamservice.dto.request.VerifyOrganizationRequest;
 import com.capstone.iamservice.dto.request.AddBankInfoRequest;
@@ -87,6 +88,14 @@ public class OrganizationProfileController {
         Long userId = jwtUtil.getDataFromAuth().userId();
         OrganizationProfileResponse response = organizationService.getOrganizationByUserId(userId);
         return ResponseEntity.ok(BaseResponse.ok("Lấy profile thành công", response));
+    }
+
+    @GetMapping("/me/account")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<BaseResponse<OrganizerAccountProfileResponse>> getMyAccountProfile() {
+        Long userId = jwtUtil.getDataFromAuth().userId();
+        OrganizerAccountProfileResponse response = organizationService.getOrganizerAccountProfile(userId);
+        return ResponseEntity.ok(BaseResponse.ok("Lấy chi tiết hồ sơ tài khoản thành công", response));
     }
 
     @GetMapping("/user/{userId}")
