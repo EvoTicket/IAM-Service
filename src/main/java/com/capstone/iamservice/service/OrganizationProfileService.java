@@ -59,7 +59,7 @@ public class OrganizationProfileService {
     String orgAvatarUrl;
 
     @Transactional
-    public OrganizationCreationResponse createOrganization(CreateOrganizationRequest request, MultipartFile logoFile, MultipartFile licenseFile) {
+    public OrganizationCreationResponse createOrganization(CreateOrganizationRequest request, MultipartFile logoFile, MultipartFile licenseFile, MultipartFile coverFile) {
         Long userId = jwtUtil.getDataFromAuth().userId();
         User user = userUtil.getUserOrThrow(userId);
 
@@ -97,7 +97,7 @@ public class OrganizationProfileService {
                 .website(request.getWebsite())
                 .businessLicenseUrl(request.getBusinessLicenseUrl())
                 .status(OrganizationStatus.PENDING)
-                .coverUrl(request.getCoverUrl() != null ? request.getCoverUrl() : "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&q=80")
+                .coverUrl("https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&q=80")
                 .shortDescription(request.getShortDescription() != null ? request.getShortDescription() : request.getDescription())
                 .publicBio(request.getPublicBio() != null ? request.getPublicBio() : request.getDescription())
                 .businessType(request.getBusinessType() != null ? request.getBusinessType() : "Công ty TNHH")
@@ -136,6 +136,13 @@ public class OrganizationProfileService {
                 uploadTasks.add(uploadService.uploadImageAsync(organization, licenseFile.getBytes(), "license"));
             } catch (IOException e) {
                 throw new AppException(ErrorCode.IO_EXCEPTION, "Không thể đọc tệp license: " + e.getMessage());
+            }
+        }
+        if (coverFile != null && !coverFile.isEmpty()) {
+            try {
+                uploadTasks.add(uploadService.uploadImageAsync(organization, coverFile.getBytes(), "cover"));
+            } catch (IOException e) {
+                throw new AppException(ErrorCode.IO_EXCEPTION, "Không thể đọc tệp cover: " + e.getMessage());
             }
         }
 

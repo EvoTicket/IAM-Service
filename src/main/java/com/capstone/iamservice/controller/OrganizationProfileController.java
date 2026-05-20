@@ -65,10 +65,15 @@ public class OrganizationProfileController {
             @RequestPart(value = "licenseFile", required = false)
             @Parameter(description = "License document/image", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
                     schema = @Schema(type = "string", format = "binary")))
-            MultipartFile licenseFile
+            MultipartFile licenseFile,
+
+            @RequestPart(value = "coverFile", required = false)
+            @Parameter(description = "Cover image", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                    schema = @Schema(type = "string", format = "binary")))
+            MultipartFile coverFile
     ) {
 
-        OrganizationCreationResponse response = organizationService.createOrganization(request, logoFile, licenseFile);
+        OrganizationCreationResponse response = organizationService.createOrganization(request, logoFile, licenseFile, coverFile);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponse.created("tạo org profile thành công", response));

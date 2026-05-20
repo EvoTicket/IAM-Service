@@ -47,10 +47,11 @@ class OrganizationProfileControllerTest {
         CreateOrganizationRequest request = mock(CreateOrganizationRequest.class);
         MultipartFile logoFile = mock(MultipartFile.class);
         MultipartFile licenseFile = mock(MultipartFile.class);
+        MultipartFile coverFile = mock(MultipartFile.class);
         OrganizationCreationResponse response = mock(OrganizationCreationResponse.class);
-        when(organizationService.createOrganization(request, logoFile, licenseFile)).thenReturn(response);
+        when(organizationService.createOrganization(request, logoFile, licenseFile, coverFile)).thenReturn(response);
 
-        ResponseEntity<BaseResponse<OrganizationCreationResponse>> result = controller.createOrganization(request, logoFile, licenseFile);
+        ResponseEntity<BaseResponse<OrganizationCreationResponse>> result = controller.createOrganization(request, logoFile, licenseFile, coverFile);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertNotNull(result.getBody());

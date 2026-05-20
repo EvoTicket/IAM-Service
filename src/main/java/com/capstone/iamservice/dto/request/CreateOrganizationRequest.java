@@ -44,7 +44,6 @@ public class CreateOrganizationRequest {
     private String businessLicenseUrl;
 
     private String logoUrl;
-    private String coverUrl;
     private String shortDescription;
     private String publicBio;
     private String businessType;

@@ -41,6 +41,9 @@ public class UploadService {
                 case "license":
                     organization.setBusinessLicenseUrl(url);
                     break;
+                case "cover":
+                    organization.setCoverUrl(url);
+                    break;
                 default:
                     break;
             }
