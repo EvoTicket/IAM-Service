@@ -1,5 +1,6 @@
 package com.capstone.iamservice.dto.response;
 
+import com.capstone.iamservice.enums.RoleEnum;
 import com.capstone.iamservice.enums.UserStatus;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,7 @@ public class AccountDetailsResponse {
     private Long id;
     private String email;
     private String fullName;
-    private String role;
+    private RoleEnum role;
     private String phoneNumber;
     private String verificationStatus;
     private UserStatus status;

@@ -1,7 +1,9 @@
 package com.capstone.iamservice.repository;
 
 import com.capstone.iamservice.entity.User;
+import com.capstone.iamservice.enums.OrganizationStatus;
 import com.capstone.iamservice.enums.RoleEnum;
+import com.capstone.iamservice.enums.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,9 +18,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
     long countByCreatedAtAfter(java.time.LocalDateTime date);
-    long countByStatus(com.capstone.iamservice.enums.UserStatus status);
+    long countByStatus(UserStatus status);
 
-    @org.springframework.data.jpa.repository.Query("""
+    @Query("""
     SELECT DISTINCT u FROM User u
     LEFT JOIN u.organizationProfile op
     JOIN u.roles r
@@ -34,12 +36,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
       AND (u.createdAt >= :since)
     """)
     org.springframework.data.domain.Page<User> accountSearch(
-            @org.springframework.data.repository.query.Param("roleName") String roleName,
-            @org.springframework.data.repository.query.Param("userStatus") com.capstone.iamservice.enums.UserStatus userStatus,
-            @org.springframework.data.repository.query.Param("orgStatus") com.capstone.iamservice.enums.OrganizationStatus orgStatus,
-            @org.springframework.data.repository.query.Param("keyword") String keyword,
-            @org.springframework.data.repository.query.Param("since") java.time.LocalDateTime since,
-            org.springframework.data.domain.Pageable pageable
+            @Param("roleName") String roleName,
+            @Param("userStatus") UserStatus userStatus,
+            @Param("orgStatus") OrganizationStatus orgStatus,
+            @Param("keyword") String keyword,
+            @Param("since") java.time.LocalDateTime since,
+            Pageable pageable
     );
 
     @Query("""

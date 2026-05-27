@@ -39,7 +39,7 @@ public class UserManagementService {
             Pageable pageable
     ) {
         // Use a far-past date instead of null to avoid PostgreSQL parameter type inference errors
-        LocalDateTime since = (days != null) ? LocalDateTime.now().minusDays(days) : LocalDateTime.of(1970, 1, 1, 0, 0);
+        LocalDateTime since = (days != null) ? LocalDateTime.now().minusDays(days) : LocalDateTime.now().minusDays(365);
         String keywordPattern = (keyword != null && !keyword.trim().isEmpty()) ? "%" + keyword.toLowerCase() + "%" : null;
         
         return userRepository.accountSearch(roleName, userStatus, orgStatus, keywordPattern, since, pageable)
@@ -47,12 +47,12 @@ public class UserManagementService {
     }
 
     private AccountDetailsResponse mapToAccountDetails(User user) {
-        String role = user.getRoles().stream()
-                .findFirst()
-                .map(Enum::name)
-                .orElse("BUYER");
+        RoleEnum role = user.getRoles().stream()
+                .anyMatch(r -> r == RoleEnum.ORGANIZER)
+                ? RoleEnum.ORGANIZER
+                : RoleEnum.USER;
 
-        String verificationStatus = "N/A";
+        String verificationStatus = "VERIFIED";
         if (user.getOrganizationProfile() != null) {
             verificationStatus = user.getOrganizationProfile().getStatus().name();
         }
