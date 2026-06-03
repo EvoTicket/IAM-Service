@@ -2,6 +2,7 @@ package com.capstone.iamservice.controller;
 
 import com.capstone.iamservice.dto.BasePageResponse;
 import com.capstone.iamservice.dto.BaseResponse;
+import com.capstone.iamservice.dto.response.AccountDetailResponse;
 import com.capstone.iamservice.dto.response.AccountDetailsResponse;
 import com.capstone.iamservice.dto.response.AccountSummaryResponse;
 import com.capstone.iamservice.enums.OrganizationStatus;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,6 +57,15 @@ public class UserManagementController {
         );
 
         return ResponseEntity.ok(BasePageResponse.ok(result));
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BaseResponse<AccountDetailResponse>> getAccountDetail(@PathVariable Long id) {
+        return ResponseEntity.ok(BaseResponse.ok(
+                "Lấy chi tiết tài khoản thành công",
+                userManagementService.getAccountDetail(id)
+        ));
     }
 
     @GetMapping("/checkers")
