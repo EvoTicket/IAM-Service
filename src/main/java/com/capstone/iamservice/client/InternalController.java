@@ -7,6 +7,8 @@ import com.capstone.iamservice.entity.OrganizationProfile;
 import com.capstone.iamservice.entity.User;
 import com.capstone.iamservice.exception.AppException;
 import com.capstone.iamservice.exception.ErrorCode;
+import com.capstone.iamservice.dto.response.AccountSummaryResponse;
+import com.capstone.iamservice.service.UserManagementService;
 import com.capstone.iamservice.repository.BankInfoRepository;
 import com.capstone.iamservice.util.LocationUtil;
 import com.capstone.iamservice.util.OrganizationUtil;
@@ -27,6 +29,12 @@ public class InternalController {
     private final LocationUtil locationUtil;
     private final UserUtil userUtil;
     private final BankInfoRepository bankInfoRepository;
+    private final UserManagementService userManagementService;
+
+    @GetMapping("/accounts/summary")
+    public ResponseEntity<AccountSummaryResponse> getAccountSummary() {
+        return ResponseEntity.ok(userManagementService.getAccountSummary());
+    }
 
     @GetMapping("/organizations/{id}")
     public ResponseEntity<OrgInternalResponse> getOrganizationById(@PathVariable Long id) {
